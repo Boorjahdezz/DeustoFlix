@@ -5,7 +5,12 @@ import java.awt.*;
 
 public class MainGuiWindow extends JFrame {
 
-    public MainGuiWindow() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public MainGuiWindow() {
         setTitle("DeustoFlix");
         setSize(1000, 600);
         setLocationRelativeTo(null);
