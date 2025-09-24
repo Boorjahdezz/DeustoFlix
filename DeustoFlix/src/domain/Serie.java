@@ -8,5 +8,7 @@ public class Serie extends MediaItem {
     }
 
     @Override
-    public String getTipo() { return "Serie"; }
+    public String getTipo() {
+    	return "Serie"; 
+    }
 }

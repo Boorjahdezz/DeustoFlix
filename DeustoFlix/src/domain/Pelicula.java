@@ -8,5 +8,7 @@ public class Pelicula extends MediaItem {
     }
 
     @Override
-    public String getTipo() { return "Pelicula"; }
+    public String getTipo() { 
+    	return "Pelicula"; 
+    }
 }

@@ -19,7 +19,7 @@ public class MediaRepository {
         };
         Random rnd = new Random();
 
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 100; i++) {
             // Asignar tipo y género aleatoriamente
             boolean esPelicula = rnd.nextBoolean();
             Genero genero = generos[rnd.nextInt(generos.length)];
@@ -53,7 +53,9 @@ public class MediaRepository {
         return new ImageIcon(img);
     }
 
-    public ArrayList<MediaItem> getAll() { return items; }
+    public ArrayList<MediaItem> getAll() { 
+    	return items;
+    }
     public ArrayList<MediaItem> getByTipo(String tipo) {
         ArrayList<MediaItem> res = new ArrayList<>();
         for (MediaItem item : items) if (item.getTipo().equals(tipo)) res.add(item);
