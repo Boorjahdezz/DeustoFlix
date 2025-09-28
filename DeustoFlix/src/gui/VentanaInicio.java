@@ -87,6 +87,11 @@ public class VentanaInicio extends JFrame{
 	            ventanaInicioSesion.setVisible(true);
 	            dispose();
 	        });
+	        CrearCuenta.addActionListener(e ->{
+	        	VentanaCrearUsuario ventanaCrearUsuario = new VentanaCrearUsuario();
+	        	ventanaCrearUsuario.setVisible(true);
+	        	dispose();
+	        	});
 
 	        // Centrar el panel de botones en el panel principal
 	        GridBagConstraints gbc = new GridBagConstraints();
