@@ -27,6 +27,7 @@ public class VentanaInicio extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
 	 public VentanaInicio() {
+		 
 	        setTitle("Inicio");
 	        setSize(1200, 800);
 	        setLocationRelativeTo(null);
@@ -82,8 +83,8 @@ public class VentanaInicio extends JFrame{
 	        
 	        //funcionalidades a los botones
 	        InicioSesion.addActionListener(e -> {
-	        	MainGuiWindow windowIniciarSesion = new MainGuiWindow();
-	            windowIniciarSesion.setVisible(true);
+	        	VentanaInicioSesion ventanaInicioSesion = new VentanaInicioSesion();
+	            ventanaInicioSesion.setVisible(true);
 	            dispose();
 	        });
 
