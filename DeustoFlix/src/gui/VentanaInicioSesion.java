@@ -55,15 +55,19 @@ public class VentanaInicioSesion extends JFrame {
         botonIniciar.setPreferredSize(new Dimension(200, 40));
         botonIniciar.setFont(new Font("Arial", Font.BOLD, 16));
         botonIniciar.addActionListener(e -> {
-            MainGuiWindow mainWindow = new MainGuiWindow();
-            mainWindow.setVisible(true);
-            dispose();
+        	VentanaCarga carga = new VentanaCarga();
+
+            carga.iniciarCarga(() -> {
+                new MainGuiWindow().setVisible(true);
+                dispose(); 
+            });
         });
         
         JButton exit = new JButton("Exit");
         exit.setPreferredSize(new Dimension(75,25));
         exit.setFont(new Font("Arial", Font.BOLD, 16));
         exit.addActionListener(e ->{
+        	
         	VentanaInicio ventanaInicio = new VentanaInicio();
         	ventanaInicio.setVisible(true);
         	dispose();

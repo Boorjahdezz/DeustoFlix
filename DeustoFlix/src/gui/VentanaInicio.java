@@ -102,6 +102,7 @@ public class VentanaInicio extends JFrame{
 
 	        // Añadir al frame
 	        add(panelPrincipal, BorderLayout.CENTER);
+	        
 	    }
 	}
 
