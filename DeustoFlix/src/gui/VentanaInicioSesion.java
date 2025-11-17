@@ -28,7 +28,7 @@ public class VentanaInicioSesion extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
-        setLayout(new BorderLayout());// Centrar panel
+        setLayout(new BorderLayout());
 
         // Campos y etiquetas
         JTextField nombreUsuario = new JTextField();

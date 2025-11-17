@@ -31,9 +31,7 @@ public class MainGuiWindow extends JFrame {
 
         repo = new MediaRepository();
 
-        // ---------------------------
-        // TOP BAR
-        // ---------------------------
+        //barra d e arriba
         JPanel topBar = new JPanel();
         topBar.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
         topBar.setBackground(new Color(20, 20, 20));
@@ -57,9 +55,7 @@ public class MainGuiWindow extends JFrame {
 
         add(topBar, BorderLayout.NORTH);
 
-        // ---------------------------
-        // CONTENT PANEL
-        // ---------------------------
+        //panel pal centro
         contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.BLACK);
@@ -88,9 +84,7 @@ public class MainGuiWindow extends JFrame {
         b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
-    // ---------------------------
-    // SECCIONES ORIGINALES
-    // ---------------------------
+    //funciones para mostrar movies y series
     private void mostrarInicio() {
         contentPanel.removeAll();
         ArrayList<MediaItem> lista = repo.getAll();
@@ -131,9 +125,7 @@ public class MainGuiWindow extends JFrame {
         refrescar();
     }
 
-    // ---------------------------
-    // TÍTULOS ALINEADOS A LA IZQUIERDA
-    // ---------------------------
+   
     private JLabel crearTitulo(String txt) {
         JLabel lbl = new JLabel(txt);
         lbl.setForeground(Color.WHITE);
@@ -148,9 +140,7 @@ public class MainGuiWindow extends JFrame {
         contentPanel.repaint();
     }
 
-    // ---------------------------
-    // RANKING
-    // ---------------------------
+    //tabla para las mejores peliculaws  y eso
     private void mostrarRanking() {
 
         contentPanel.removeAll();

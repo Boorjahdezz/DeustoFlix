@@ -62,7 +62,7 @@ public class VentanaInicio extends JFrame{
             InicioSesion.setFocusPainted(false);
             InicioSesion.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-	        Dimension tamanoBoton = new Dimension(400, 100); // ancho=400, alto=100
+	        Dimension tamanoBoton = new Dimension(400, 100); 
 	        CrearCuenta.setPreferredSize(tamanoBoton);
 	        CrearCuenta.setMaximumSize(tamanoBoton);
 	        CrearCuenta.setMinimumSize(tamanoBoton);
@@ -75,13 +75,13 @@ public class VentanaInicio extends JFrame{
 	        CrearCuenta.setAlignmentX(Component.CENTER_ALIGNMENT);
 	        InicioSesion.setAlignmentX(Component.CENTER_ALIGNMENT);
 	        
-	        // Añadir botones y espacio entre ellos
+	        
 	        panelBotones.add(InicioSesion);
 	        panelBotones.add(Box.createRigidArea(new Dimension(0, 30))); // espacio entre botones
 	        panelBotones.add(CrearCuenta);
 	
 	        
-	        //funcionalidades a los botones
+	        //eventos a los botones
 	        InicioSesion.addActionListener(e -> {
 	        	VentanaInicioSesion ventanaInicioSesion = new VentanaInicioSesion();
 	            ventanaInicioSesion.setVisible(true);

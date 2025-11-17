@@ -30,7 +30,7 @@ public class RankingCellRenderer extends DefaultTableCellRenderer {
             lbl.setBackground(new Color(70, 70, 70));
             lbl.setForeground(Color.WHITE);
         } else {
-            lbl.setBackground(new Color(30, 30, 30));   // gris oscuro
+            lbl.setBackground(new Color(30, 30, 30));   
             lbl.setForeground(Color.WHITE);
         }
 

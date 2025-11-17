@@ -23,7 +23,7 @@ public class VentanaCrearUsuario extends JFrame {
         setTitle("Crear Usuario");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout()); // SOLO BorderLayout en el JFrame
+        setLayout(new BorderLayout()); 
 
         // -------- BOTÓN EXIT ARRIBA IZQUIERDA --------
         JButton exit = new JButton("Exit");
@@ -41,7 +41,7 @@ public class VentanaCrearUsuario extends JFrame {
 
         add(panelExit, BorderLayout.NORTH);
 
-        // -------- PANEL CENTRAL CON FORMULARIO CENTRADO --------
+        // PANEL CENTRAL CON FORMULARIO CENTRADO 
         JTextField nombreUsuario = new JTextField();
         nombreUsuario.setPreferredSize(new Dimension(300,40));
         nombreUsuario.setBackground(new Color(30,30,30));
@@ -111,9 +111,9 @@ public class VentanaCrearUsuario extends JFrame {
         gbc.gridy = 6;
         panelParaRellenar.add(botoncrearUsuario, gbc);
 
-        add(panelParaRellenar, BorderLayout.CENTER); // Panel centrado
+        add(panelParaRellenar, BorderLayout.CENTER); 
 
-        // Fondo general de la ventana (opcional, para gris claro fuera del panel central)
+        // Fondo general de la ventana
         getContentPane().setBackground(new Color(220,220,220));
     }
 }
