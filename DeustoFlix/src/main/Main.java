@@ -1,6 +1,6 @@
 package main;
 
-import gui.MainGuiWindow;
+
 import gui.VentanaInicio;
 
 // Main para inicializar la aplicacion
