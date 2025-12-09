@@ -55,7 +55,7 @@ public class MainGuiWindow extends JFrame {
 
         add(topBar, BorderLayout.NORTH);
 
-        //panel pal centro
+        //panel centro
         contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.BLACK);

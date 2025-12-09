@@ -6,7 +6,9 @@ public abstract class MediaItem {
     protected String titulo;
     protected String descripcion;
     protected Genero genero;
-    protected Categoria categoria;
+    protected int Duracion;
+  
+	protected Categoria categoria;
     protected ImageIcon imagen;
 
     public MediaItem(String titulo, String descripcion, Genero genero, Categoria categoria, ImageIcon imagen) {
@@ -33,4 +35,11 @@ public abstract class MediaItem {
     	return imagen; 
     }
     public abstract String getTipo();
+    public int getDuracion() {
+		return Duracion;
+	}
+
+	public void setDuracion(int duracion) {
+		Duracion = duracion;
+	}
 }
