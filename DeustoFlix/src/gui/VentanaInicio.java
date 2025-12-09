@@ -1,109 +1,73 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
+import javax.swing.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import databases.ConexionBD;
 
-public class VentanaInicio extends JFrame{
+public class VentanaInicio extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	 public VentanaInicio() {
-		 
-	        setTitle("Inicio");
-	        setSize(1200, 800);
-	        setLocationRelativeTo(null);
-	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	        setLayout(new BorderLayout());
+    private static final long serialVersionUID = 1L;
 
-	        // Panel principal con GridBagLayout para centrar contenido
-	        JPanel panelPrincipal = new JPanel(new GridBagLayout());
-	        panelPrincipal.setBackground(new Color(30, 30, 30)); // fondo oscuro
+    public VentanaInicio() {
+        setTitle("Inicio");
+        setSize(1200, 800);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-	        // Panel de botones (vertical)
-	        JPanel panelBotones = new JPanel();
-	        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
-	        panelBotones.setOpaque(false);
-	        /*
-	        //imagen logo
-	        ImageIcon imagen = new ImageIcon(getClass().getResource("/gui/Imagenes/DeustoFlixLogo.jpg"));
-	        JLabel etiquetaImagen = new JLabel(imagen);
-	        etiquetaImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
-	        panelBotones.add(etiquetaImagen);
-	        panelBotones.add(Box.createRigidArea(new Dimension(0,40)));
-	        */
-	        // Botones
-	        JButton CrearCuenta = new JButton("Crear Cuenta");
-	        JButton InicioSesion = new JButton("Iniciar Sesion");
-	       // CrearCuenta.setForeground(Color.WHITE);
-	        CrearCuenta.setBackground(new Color(50, 50, 50));
-	        CrearCuenta.setFocusPainted(false);
-	        CrearCuenta.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-           // InicioSesion.setForeground(Color.WHITE);
-            InicioSesion.setBackground(new Color(50, 50, 50));
-            InicioSesion.setFocusPainted(false);
-            InicioSesion.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        JPanel panelPrincipal = new JPanel(new GridBagLayout());
+        panelPrincipal.setBackground(new Color(30, 30, 30));
 
-	        Dimension tamanoBoton = new Dimension(400, 100); 
-	        CrearCuenta.setPreferredSize(tamanoBoton);
-	        CrearCuenta.setMaximumSize(tamanoBoton);
-	        CrearCuenta.setMinimumSize(tamanoBoton);
-	        InicioSesion.setPreferredSize(tamanoBoton);
-	        InicioSesion.setMaximumSize(tamanoBoton);
-	        InicioSesion.setMinimumSize(tamanoBoton);
-	        CrearCuenta.setBackground(Color.WHITE);
-	        InicioSesion.setBackground(Color.WHITE);
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
+        panelBotones.setOpaque(false);
 
-	        CrearCuenta.setAlignmentX(Component.CENTER_ALIGNMENT);
-	        InicioSesion.setAlignmentX(Component.CENTER_ALIGNMENT);
-	        
-	        
-	        panelBotones.add(InicioSesion);
-	        panelBotones.add(Box.createRigidArea(new Dimension(0, 30))); // espacio entre botones
-	        panelBotones.add(CrearCuenta);
-	
-	        
-	        //eventos a los botones
-	        InicioSesion.addActionListener(e -> {
-	        	VentanaInicioSesion ventanaInicioSesion = new VentanaInicioSesion();
-	            ventanaInicioSesion.setVisible(true);
-	            dispose();
-	        });
-	        CrearCuenta.addActionListener(e ->{
-	        	VentanaCrearUsuario ventanaCrearUsuario = new VentanaCrearUsuario();
-	        	ventanaCrearUsuario.setVisible(true);
-	        	dispose();
-	        	});
+        JButton btnCrearCuenta = new JButton("Crear Cuenta");
+        JButton btnInicioSesion = new JButton("Iniciar Sesion");
 
-	        // Centrar el panel de botones en el panel principal
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        gbc.gridx = 0;
-	        gbc.gridy = 0;
-	        gbc.anchor = GridBagConstraints.CENTER;
-	        panelPrincipal.add(panelBotones, gbc);
+        Dimension tamanoBoton = new Dimension(400, 100);
+        btnCrearCuenta.setPreferredSize(tamanoBoton);
+        btnInicioSesion.setPreferredSize(tamanoBoton);
+        btnCrearCuenta.setMaximumSize(tamanoBoton);
+        btnInicioSesion.setMaximumSize(tamanoBoton);
+        btnCrearCuenta.setMinimumSize(tamanoBoton);
+        btnInicioSesion.setMinimumSize(tamanoBoton);
 
-	        // Añadir al frame
-	        add(panelPrincipal, BorderLayout.CENTER);
-	        
-	    }
-	}
+        btnCrearCuenta.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnInicioSesion.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        btnCrearCuenta.setBackground(Color.WHITE);
+        btnInicioSesion.setBackground(Color.WHITE);
+
+        panelBotones.add(btnInicioSesion);
+        panelBotones.add(Box.createRigidArea(new Dimension(0, 30)));
+        panelBotones.add(btnCrearCuenta);
+
+        btnInicioSesion.addActionListener(e -> {
+            new VentanaInicioSesion().setVisible(true);
+            dispose();
+        });
+
+        btnCrearCuenta.addActionListener(e -> {
+            new VentanaCrearUsuario().setVisible(true);
+            dispose();
+        });
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panelPrincipal.add(panelBotones, gbc);
+
+        add(panelPrincipal, BorderLayout.CENTER);
+    }
+
+    public static void main(String[] args) {
+        // Inicializamos la base de datos
+        ConexionBD.inicializarBD();
+        SwingUtilities.invokeLater(() -> new VentanaInicio().setVisible(true));
+    }
+}
 
 
