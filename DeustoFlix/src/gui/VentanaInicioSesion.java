@@ -1,8 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;import java.awt.Color;
-
-
+import java.awt.Cursor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,6 +10,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,12 +40,53 @@ public class VentanaInicioSesion extends JFrame {
         JLabel nombreUsuarioLabel = new JLabel("Nombre de Usuario");
         nombreUsuarioLabel.setForeground(Color.WHITE);
         nombreUsuarioLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        
+        JPanel panelPassword = new JPanel(new BorderLayout());
+        panelPassword.setPreferredSize(new Dimension(300, 40)); 
+        panelPassword.setBorder(BorderFactory.createLineBorder(Color.GRAY)); 
 
-        JPasswordField contraseña = new JPasswordField();
-        contraseña.setPreferredSize(new Dimension(300, 40));
-        contraseña.setBackground(new Color(50, 50, 50));
-        contraseña.setForeground(Color.WHITE);
-        contraseña.setFont(new Font("Arial", Font.PLAIN, 18));
+        
+        JPasswordField contenedorContrasenya = new JPasswordField();
+        contenedorContrasenya.setBackground(new Color(50, 50, 50));
+        contenedorContrasenya.setForeground(Color.WHITE);
+        contenedorContrasenya.setCaretColor(Color.WHITE);
+        contenedorContrasenya.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        contenedorContrasenya.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        
+        JButton btnVer = new JButton("👁");
+        btnVer.setPreferredSize(new Dimension(50, 40));
+        btnVer.setBackground(new Color(60, 60, 60));
+        btnVer.setForeground(Color.WHITE);
+        btnVer.setBorderPainted(false);
+        btnVer.setFocusPainted(false);
+        btnVer.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        btnVer.addActionListener(e -> {
+            char c = contenedorContrasenya.getEchoChar();
+            if (c == '*') {
+                contenedorContrasenya.setEchoChar((char) 0);
+                btnVer.setBackground(new Color(100, 100, 100)); 
+            } else {
+                contenedorContrasenya.setEchoChar('•');
+                btnVer.setBackground(new Color(60, 60, 60));
+            }
+        });
+        
+        contenedorContrasenya.setEchoChar('*'); 
+
+        
+        panelPassword.add(contenedorContrasenya, BorderLayout.CENTER);
+        panelPassword.add(btnVer, BorderLayout.EAST);
+        
+        //JPasswordField contraseña = new JPasswordField();
+        //contraseña.setPreferredSize(new Dimension(300, 40));
+        //contraseña.setBackground(new Color(50, 50, 50));
+        //contraseña.setForeground(Color.WHITE);
+        //contraseña.setFont(new Font("Arial", Font.PLAIN, 18));
+        
+
 
         JLabel contraseñaLabel = new JLabel("Contraseña");
         contraseñaLabel.setForeground(Color.WHITE);
@@ -102,7 +143,7 @@ public class VentanaInicioSesion extends JFrame {
 
  
         gbc.gridy = 3;
-        panel.add(contraseña, gbc);
+        panel.add(panelPassword, gbc);
 
         gbc.gridy = 4;
         panel.add(botonIniciar, gbc);
