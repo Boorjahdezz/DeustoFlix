@@ -7,9 +7,7 @@ import gui.VentanaInicio;
 
 public class Main {
     public static void main(String[] args) {
-        MainGuiWindow window = new MainGuiWindow();
         VentanaInicio inicio = new VentanaInicio();
         inicio.setVisible(true);
-      //  window.setVisible(true);
     }
 }
