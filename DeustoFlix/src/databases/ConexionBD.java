@@ -19,6 +19,18 @@ public class ConexionBD {
                     + "gmail TEXT NOT NULL, "
                     + "contrasenya TEXT NOT NULL)";
             stmt.execute(sql);
+            // Crear tabla contenido si no existe(Para las peliculas y series)
+            String sqlContenido = "CREATE TABLE IF NOT EXISTS contenido ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "titulo TEXT NOT NULL, "
+                    + "tipo TEXT NOT NULL, "
+                    + "genero TEXT, "
+                    + "categoria TEXT, "
+                    + "descripcion TEXT, "
+                    + "duracion INTEGER, "
+                    + "valoracion REAL)";
+            stmt.execute(sqlContenido);
+            
             System.out.println("Tabla 'usuarios' creada correctamente.");
         } catch (SQLException e) {
             e.printStackTrace();
