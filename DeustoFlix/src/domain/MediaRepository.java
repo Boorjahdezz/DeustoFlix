@@ -11,6 +11,15 @@ public class MediaRepository {
 
     public MediaRepository() {
         items = new ArrayList<>();
+        //importamos el contenido de la db
+        items = ConexionBD.cargarContenido();
+        
+        if(items.isEmpty()) {
+        	generarDatosIniciales();
+        	items = ConexionBD.cargarContenido();
+        }
+    }
+    private void generarDatosIniciales() {
         Genero[] generos = Genero.values();
         Categoria[] categorias = {
             new Categoria("TOP TV"),
@@ -21,7 +30,6 @@ public class MediaRepository {
         Random rnd = new Random();
 
         for (int i = 0; i < 100; i++) {
-            // Asignar tipo y género aleatoriamente
             boolean esPelicula = rnd.nextBoolean();
             Genero genero = generos[rnd.nextInt(generos.length)];
             Categoria categoria = categorias[rnd.nextInt(categorias.length)];
@@ -29,10 +37,14 @@ public class MediaRepository {
             String descripcion = "Descripción de " + titulo + " (" + genero + ")";
             ImageIcon img = crearImagenDemo(genero, i);
 
+            MediaItem item;
             if (esPelicula)
-                items.add(new Pelicula(titulo, descripcion, genero, categoria, img));
+                item = new Pelicula(titulo, descripcion, genero, categoria, img);
             else
-                items.add(new Serie(titulo, descripcion, genero, categoria, img));
+                item = new Serie(titulo, descripcion, genero, categoria, img);
+            
+            // IMPORTANTE: Guardar en BD
+            ConexionBD.insertarContenido(item);
         }
     }
 

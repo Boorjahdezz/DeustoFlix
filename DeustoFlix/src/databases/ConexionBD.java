@@ -9,7 +9,7 @@ import domain.*;
 
 public class ConexionBD {
 
-    private static final String URL = "jdbc:sqlite:usuarios.db";
+    private static final String URL = "jdbc:sqlite:deustoflix.db";
 
     // Inicializa la base de datos y la tabla
     public static void inicializarBD() {
