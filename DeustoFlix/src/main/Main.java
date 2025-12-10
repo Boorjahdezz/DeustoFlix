@@ -1,9 +1,10 @@
 package main;
 
 import javax.swing.SwingUtilities;
+
+import carga.CargaDatosIniciales;
 import databases.ConexionBD;
 import gui.VentanaInicio;
-import resources.CargaDatosIniciales;
 
 public class Main {
     public static void main(String[] args) {

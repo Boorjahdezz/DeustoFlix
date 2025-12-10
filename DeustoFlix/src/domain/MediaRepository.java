@@ -37,14 +37,9 @@ public class MediaRepository {
             String descripcion = "Descripción de " + titulo + " (" + genero + ")";
             ImageIcon img = crearImagenDemo(genero, i);
 
-            MediaItem item;
-            if (esPelicula)
-                item = new Pelicula(titulo, descripcion, genero, categoria, img);
-            else
-                item = new Serie(titulo, descripcion, genero, categoria, img);
-            
+           
             // IMPORTANTE: Guardar en BD
-            ConexionBD.insertarContenido(item);
+            
         }
     }
 
@@ -58,6 +53,7 @@ public class MediaRepository {
             case ACCION -> new Color(0, 80, 180);
             case DRAMA -> new Color(100, 0, 100);
             case ROMANCE -> new Color(255, 120, 180);
+		default -> throw new IllegalArgumentException("Unexpected value: " + genero);
         };
         g.setColor(color); g.fillRect(0, 0, 170, 120);
         g.setColor(Color.WHITE); g.drawString(genero.name(), 10, 20);

@@ -3,25 +3,31 @@ package domain;
 import javax.swing.ImageIcon;
 
 public class Pelicula extends MediaItem {
-	
-	private double valoracion;
-	
-    public Pelicula(String titulo, String descripcion, Genero genero, Categoria categoria, ImageIcon imagen) {
-        super(titulo, descripcion, genero, categoria, imagen);
-        this.valoracion = Math.round(Math.random() * 10 * 10.0) / 10.0;
+
+    private double valoracion;
+
+    // Constructor principal con valoracion y duracion
+    public Pelicula(String titulo, String descripcion, Genero genero, Categoria categoria, double valoracion, int duracion) {
+        super(titulo, descripcion, genero, categoria, duracion);
+        this.valoracion = valoracion;
     }
 
-    public Pelicula(String titulo, String descripcion, Genero genero, Categoria categoria, double valoracion2,
-            int duracion) {
-        super(titulo, descripcion, genero, categoria, null);
-        this.valoracion = valoracion2;
+    // Constructor con imagen, valoracion default 0 y duracion default 0
+    public Pelicula(String titulo, String descripcion, Genero genero, Categoria categoria, ImageIcon imagen) {
+        super(titulo, descripcion, genero, categoria, 0, imagen);
+        this.valoracion = 0.0;
     }
 
     @Override
-    public String getTipo() { 
-    	return "Pelicula"; 
+    public String getTipo() {
+        return "Pelicula";
     }
+
     public double getValoracion() {
         return valoracion;
+    }
+
+    public void setValoracion(double valoracion) {
+        this.valoracion = valoracion;
     }
 }
