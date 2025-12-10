@@ -2,6 +2,8 @@ package databases;
 
 import java.sql.*;
 
+import domain.*;
+
 public class ConexionBD {
 
     private static final String URL = "jdbc:sqlite:usuarios.db";
@@ -65,6 +67,30 @@ public class ConexionBD {
         } catch (SQLException e) {
             System.err.println("Error en login: " + e.getMessage());
             return false;
+        }
+    }
+    public static void insertarContenido(MediaItem item) {
+        String sql = "INSERT INTO contenido(titulo, tipo, genero, categoria, descripcion, duracion, valoracion) VALUES(?,?,?,?,?,?,?)";
+        
+        try (Connection con = DriverManager.getConnection(URL);
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            
+            pst.setString(1, item.getTitulo());
+            pst.setString(2, item.getTipo()); // "Pelicula" o "Serie"
+            pst.setString(3, item.getGenero().name());
+            pst.setString(4, item.getCategoria().getNombre());
+            pst.setString(5, item.getDescripcion());
+            pst.setInt(6, item.getDuracion());
+            
+            // Obtenemos la valoración dependiendo del tipo
+            double val = 0.0;
+            if (item instanceof Pelicula) val = ((Pelicula) item).getValoracion();
+            else if (item instanceof Serie) val = ((Serie) item).getValoracion();
+            pst.setDouble(7, val);
+
+            pst.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
