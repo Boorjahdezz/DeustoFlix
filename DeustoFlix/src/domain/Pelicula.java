@@ -11,6 +11,12 @@ public class Pelicula extends MediaItem {
         this.valoracion = Math.round(Math.random() * 10 * 10.0) / 10.0;
     }
 
+    public Pelicula(String titulo, String descripcion, Genero genero, Categoria categoria, double valoracion2,
+            int duracion) {
+        super(titulo, descripcion, genero, categoria, null);
+        this.valoracion = valoracion2;
+    }
+
     @Override
     public String getTipo() { 
     	return "Pelicula"; 

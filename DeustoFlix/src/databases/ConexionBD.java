@@ -11,9 +11,18 @@ public class ConexionBD {
 
     private static final String URL = "jdbc:sqlite:deustoflix.db";
 
+    private static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC"); // fuerza registro del driver si el jar está en el classpath
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Driver SQLite no encontrado en el classpath (falta sqlite-jdbc.jar)", e);
+        }
+        return DriverManager.getConnection(URL);
+    }
+
     // Inicializa la base de datos y la tabla
     public static void inicializarBD() {
-        try (Connection con = DriverManager.getConnection(URL);
+        try (Connection con = getConnection();
              Statement stmt = con.createStatement()) {
             System.out.println("Conexión a la base de datos exitosa.");
 
@@ -46,7 +55,7 @@ public class ConexionBD {
     // Método para registrar usuario
     public static boolean crearUsuario(String nombre, String gmail, String contrasenya) {
         String sql = "INSERT INTO usuarios(nombre, gmail, contrasenya) VALUES(?,?,?)";
-        try (Connection con = DriverManager.getConnection(URL);
+        try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, nombre);
             pst.setString(2, gmail);
@@ -62,7 +71,7 @@ public class ConexionBD {
     // Método para login
     public static boolean loginUsuario(String nombre, String contrasenya) {
         String sql = "SELECT * FROM usuarios WHERE nombre=? AND contrasenya=?";
-        try (Connection con = DriverManager.getConnection(URL);
+        try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, nombre);
             pst.setString(2, contrasenya);
@@ -76,7 +85,7 @@ public class ConexionBD {
     public static void insertarContenido(MediaItem item) {
         String sql = "INSERT INTO contenido(titulo, tipo, genero, categoria, descripcion, duracion, valoracion) VALUES(?,?,?,?,?,?,?)";
         
-        try (Connection con = DriverManager.getConnection(URL);
+        try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             
             pst.setString(1, item.getTitulo());
