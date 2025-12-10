@@ -1,6 +1,9 @@
 package databases;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 
 import domain.*;
 
@@ -30,7 +33,8 @@ public class ConexionBD {
                     + "categoria TEXT, "
                     + "descripcion TEXT, "
                     + "duracion INTEGER, "
-                    + "valoracion REAL)";
+                    + "valoracion REAL,"
+                    + "icono TEXT)";
             stmt.execute(sqlContenido);
             
             System.out.println("Tabla 'usuarios' creada correctamente.");
@@ -93,5 +97,41 @@ public class ConexionBD {
             e.printStackTrace();
         }
     }
+    public static ArrayList<MediaItem> cargarContenido() {
+        ArrayList<MediaItem> lista = new ArrayList<>();
+        String sql = "SELECT * FROM contenido";
+
+        try (Connection con = DriverManager.getConnection(URL);
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                String titulo = rs.getString("titulo");
+                String tipo = rs.getString("tipo");
+                String generoStr = rs.getString("genero");
+                String catStr = rs.getString("categoria");
+                String desc = rs.getString("descripcion");
+                // int duracion = rs.getInt("duracion");
+                
+                // Reconstruir objetos
+                Genero genero = Genero.valueOf(generoStr);
+                Categoria categoria = new Categoria(catStr);
+                
+                // Generamos la imagen al vuelo (ya que no guardamos la ruta en BD todavía)
+                // Usamos un índice dummy '0' o extraemos el número del título si quieres ser preciso
+                ImageIcon img = MediaRepository.crearImagenDemo(genero, 0); 
+
+                if ("Pelicula".equals(tipo)) {
+                    lista.add(new Pelicula(titulo, desc, genero, categoria,img));
+                } else {
+                    lista.add(new Serie(titulo, desc, genero, categoria, img));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }
+
 

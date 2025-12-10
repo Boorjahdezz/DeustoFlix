@@ -4,6 +4,7 @@ import javax.swing.ImageIcon;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import databases.*;
 
 public class MediaRepository {
     private ArrayList<MediaItem> items;
@@ -35,7 +36,7 @@ public class MediaRepository {
         }
     }
 
-    private ImageIcon crearImagenDemo(Genero genero, int idx) {
+    public static ImageIcon crearImagenDemo(Genero genero, int idx) {
         BufferedImage img = new BufferedImage(170, 120, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         Color color = switch (genero) {
