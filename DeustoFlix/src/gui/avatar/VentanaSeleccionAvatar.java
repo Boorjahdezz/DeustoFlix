@@ -53,8 +53,8 @@ public class VentanaSeleccionAvatar extends JFrame {
 
     private List<ImageIcon> cargarAvataresDesdeRecursos() {
         String[] nombres = {
-                "avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png",
-                "avatar5.png", "avatar6.png", "avatar7.png", "avatar8.png"
+                "perfil1.png", "ferfil2.png", "ferfil3.png", "ferfil4.png",
+                "ferfil5.png", "ferfil6.png", "ferfil7.png", "ferfil8.png"
         };
         List<ImageIcon> lista = new ArrayList<>();
         ClassLoader cl = getClass().getClassLoader();
