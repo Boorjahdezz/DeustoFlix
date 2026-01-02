@@ -11,14 +11,16 @@ public class MediaRepository {
 
     public MediaRepository() {
         items = new ArrayList<>();
-        //importamos el contenido de la db
+        // 1. Intentamos cargar de la BD
         items = ConexionBD.cargarContenido();
         
+        // 2. Si la BD está vacía, generamos datos y volvemos a cargar
         if(items.isEmpty()) {
-        	generarDatosIniciales();
-        	items = ConexionBD.cargarContenido();
+            generarDatosIniciales();
+            items = ConexionBD.cargarContenido();
         }
     }
+
     private void generarDatosIniciales() {
         Genero[] generos = Genero.values();
         Categoria[] categorias = {
@@ -35,12 +37,23 @@ public class MediaRepository {
             Categoria categoria = categorias[rnd.nextInt(categorias.length)];
             String titulo = (esPelicula ? "Pelicula " : "Serie ") + (i+1);
             String descripcion = "Descripción de " + titulo + " (" + genero + ")";
-            ImageIcon img = crearImagenDemo(genero, i);
-
-           
-            // IMPORTANTE: Guardar en BD
             
+            // La imagen no la persistimos en BD en este ejemplo simple, 
+            // pero el objeto Java la tendrá al crearse la imagen demo.
+            
+            // CAMBIO: Crear el objeto y guardarlo en BD
+            MediaItem itemNuevo;
+            if (esPelicula) {
+                // Constructor: titulo, descripcion, genero, categoria, valoracion, duracion
+                itemNuevo = new Pelicula(titulo, descripcion, genero, categoria, 5.0 + rnd.nextDouble()*5, 90 + rnd.nextInt(60));
+            } else {
+                itemNuevo = new Serie(titulo, descripcion, genero, categoria, 5.0 + rnd.nextDouble()*5, 30 + rnd.nextInt(30));
+            }
+
+            // ¡IMPORTANTE!: Guardar en BD para que no se pierda
+            ConexionBD.insertarContenido(itemNuevo);
         }
+        System.out.println("Datos iniciales generados y guardados en BD.");
     }
 
     public static ImageIcon crearImagenDemo(Genero genero, int idx) {
@@ -53,7 +66,7 @@ public class MediaRepository {
             case ACCION -> new Color(0, 80, 180);
             case DRAMA -> new Color(100, 0, 100);
             case ROMANCE -> new Color(255, 120, 180);
-		default -> throw new IllegalArgumentException("Unexpected value: " + genero);
+            default -> new Color(100, 100, 100); // Color por defecto para evitar errores
         };
         g.setColor(color); g.fillRect(0, 0, 170, 120);
         g.setColor(Color.WHITE); g.drawString(genero.name(), 10, 20);
@@ -63,7 +76,7 @@ public class MediaRepository {
     }
 
     public ArrayList<MediaItem> getAll() { 
-    	return items;
+        return items;
     }
     public ArrayList<MediaItem> getByTipo(String tipo) {
         ArrayList<MediaItem> res = new ArrayList<>();

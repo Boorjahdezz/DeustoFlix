@@ -5,11 +5,12 @@ public class Usuario {
     private String nombre;
     private String gmail;
     private String contrasenya;
-    private String foto; // ruta o nombre de archivo del avatar
+    private String foto; // CAMBIO: Nueva propiedad
 
     public Usuario() {
     }
 
+    // Constructor completo con ID
     public Usuario(int id, String nombre, String gmail, String contrasenya, String foto) {
         this.id = id;
         this.nombre = nombre;
@@ -18,6 +19,7 @@ public class Usuario {
         this.foto = foto;
     }
 
+    // Constructor sin ID (para crear nuevos usuarios antes de guardarlos)
     public Usuario(String nombre, String gmail, String contrasenya, String foto) {
         this.nombre = nombre;
         this.gmail = gmail;

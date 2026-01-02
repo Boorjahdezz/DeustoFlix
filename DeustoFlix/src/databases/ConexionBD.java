@@ -1,20 +1,32 @@
 package databases;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
 import domain.*;
 
 public class ConexionBD {
 
-    private static final String URL = "jdbc:sqlite:deustoflix.db";
+    // Ruta a la carpeta y archivo
+    private static final String URL = "jdbc:sqlite:Basededatos/deustoflix.db";
 
     private static Connection getConnection() throws SQLException {
-        try { Class.forName("org.sqlite.JDBC"); }
-        catch (ClassNotFoundException e) { throw new SQLException("Driver SQLite no encontrado", e); }
+        try { 
+            Class.forName("org.sqlite.JDBC"); 
+        } catch (ClassNotFoundException e) { 
+            throw new SQLException("Driver SQLite no encontrado", e); 
+        }
+
+        // Crear carpeta si no existe
+        File dbFile = new File("Basededatos/deustoflix.db");
+        File parentDir = dbFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs(); 
+        }
+
         return DriverManager.getConnection(URL);
     }
 
@@ -24,7 +36,8 @@ public class ConexionBD {
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + "nombre TEXT NOT NULL UNIQUE, "
                     + "gmail TEXT NOT NULL, "
-                    + "contrasenya TEXT NOT NULL)";
+                    + "contrasenya TEXT NOT NULL, "
+                    + "foto TEXT)"; 
             stmt.execute(sqlUsuarios);
 
             String sqlContenido = "CREATE TABLE IF NOT EXISTS contenido ("
@@ -38,24 +51,54 @@ public class ConexionBD {
                     + "valoracion REAL)";
             stmt.execute(sqlContenido);
 
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        }
     }
 
-    public static boolean crearUsuario(String nombre, String gmail, String contrasenya) {
-        String sql = "INSERT INTO usuarios(nombre, gmail, contrasenya) VALUES(?,?,?)";
+    public static boolean crearUsuario(String nombre, String gmail, String contrasenya, String foto) {
+        String sql = "INSERT INTO usuarios(nombre, gmail, contrasenya, foto) VALUES(?,?,?,?)";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, nombre); pst.setString(2, gmail); pst.setString(3, contrasenya);
-            pst.executeUpdate(); return true;
-        } catch (SQLException e) { System.err.println("Error al crear usuario: " + e.getMessage()); return false; }
+            pst.setString(1, nombre); 
+            pst.setString(2, gmail); 
+            pst.setString(3, contrasenya);
+            pst.setString(4, foto); 
+            pst.executeUpdate(); 
+            return true;
+        } catch (SQLException e) { 
+            System.err.println("Error SQL al crear usuario: " + e.getMessage());
+            return false; 
+        }
     }
 
     public static boolean loginUsuario(String nombre, String contrasenya) {
         String sql = "SELECT * FROM usuarios WHERE nombre=? AND contrasenya=?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, nombre); pst.setString(2, contrasenya);
-            ResultSet rs = pst.executeQuery(); return rs.next();
-        } catch (SQLException e) { System.err.println("Error en login: " + e.getMessage()); return false; }
+            pst.setString(1, nombre); 
+            pst.setString(2, contrasenya);
+            ResultSet rs = pst.executeQuery(); 
+            return rs.next();
+        } catch (SQLException e) { 
+            System.err.println("Error en login: " + e.getMessage()); 
+            return false; 
+        }
     }
+
+    // --- NUEVO MÉTODO PARA RECUPERAR LA FOTO ---
+    public static String obtenerFotoUsuario(String nombre) {
+        String sql = "SELECT foto FROM usuarios WHERE nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, nombre);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getString("foto");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; 
+    }
+    // -------------------------------------------
 
     public static void insertarContenido(MediaItem item) {
         String sql = "INSERT INTO contenido(titulo,tipo,genero,categoria,descripcion,duracion,valoracion) VALUES(?,?,?,?,?,?,?)";
@@ -71,7 +114,9 @@ public class ConexionBD {
             else if (item instanceof Serie) val = ((Serie)item).getValoracion();
             pst.setDouble(7, val);
             pst.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        }
     }
 
     public static ArrayList<MediaItem> cargarContenido() {
@@ -89,19 +134,21 @@ public class ConexionBD {
                 if ("Pelicula".equals(tipo)) lista.add(new Pelicula(titulo, desc, genero, categoria, val, dur));
                 else lista.add(new Serie(titulo, desc, genero, categoria, val, dur));
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        }
         return lista;
     }
 
     public static void cargarPeliculasDesdeCSV() {
         var stream = ConexionBD.class.getClassLoader().getResourceAsStream("peliculas.csv");
         if (stream == null) {
-            System.err.println("No se encontró 'peliculas.csv' en el classpath (incluye src/resources al ejecutar).");
+            System.err.println("No se encontró 'peliculas.csv'.");
             return;
         }
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            br.readLine(); // saltar cabecera
+            br.readLine(); 
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] campos = linea.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
@@ -115,8 +162,8 @@ public class ConexionBD {
                     insertarContenido(new Pelicula(titulo, descripcion, genero, categoria, val, dur));
                 }
             }
-        } catch (Exception e) { System.err.println("Error cargando CSV: " + e.getMessage()); }
+        } catch (Exception e) { 
+            System.err.println("Error cargando CSV: " + e.getMessage()); 
+        }
     }
 }
-
-

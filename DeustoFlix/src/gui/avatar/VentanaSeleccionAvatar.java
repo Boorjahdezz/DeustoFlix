@@ -1,23 +1,29 @@
 package gui.avatar;
 
-import gui.MainGuiWindow;
+import gui.MainGuiWindow;    // <--- IMPORTANTE: Importamos la ventana principal
+import databases.ConexionBD;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 public class VentanaSeleccionAvatar extends JFrame {
 
-    public VentanaSeleccionAvatar(String usuario) {
-        setTitle("Elige tu avatar");
-        setSize(800, 400);
+    private String nombreTemp;
+    private String gmailTemp;
+    private String passTemp;
+
+    public VentanaSeleccionAvatar(String nombre, String gmail, String pass) {
+        this.nombreTemp = nombre;
+        this.gmailTemp = gmail;
+        this.passTemp = pass;
+
+        setTitle("Paso 2: Elige tu avatar");
+        setSize(800, 500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        JLabel titulo = new JLabel("Elige una foto de perfil", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Elige una foto de perfil para terminar", SwingConstants.CENTER);
         titulo.setForeground(Color.WHITE);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 20));
         titulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
@@ -29,90 +35,67 @@ public class VentanaSeleccionAvatar extends JFrame {
         grid.setBackground(new Color(20, 20, 20));
         grid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        List<ImageIcon> opciones = cargarAvataresDesdeRecursos();
-        if (opciones.isEmpty()) {
-            opciones = crearAvatares(usuario); // fallback con inicial si no hay imágenes
-        }
-        for (ImageIcon icon : opciones) {
+        // Nombres de los archivos en tu carpeta resources
+        String[] nombresArchivos = {
+                "perfil1.png", "perfil2.png", "perfil3.png", "perfil4.png",
+                "perfil5.png", "perfil6.png", "perfil7.png", "perfil8.png"
+        };
+
+        ClassLoader cl = getClass().getClassLoader();
+
+        for (String nombreArchivo : nombresArchivos) {
+            // Cargar imagen
+            ImageIcon icon = null;
+            java.net.URL url = cl.getResource(nombreArchivo);
+            
+            if (url == null) url = cl.getResource("Imagenes/" + nombreArchivo);
+
+            if (url != null) {
+                icon = new ImageIcon(url);
+            } else {
+                System.err.println("No se encontró imagen: " + nombreArchivo);
+                continue; 
+            }
+
+            // Guardamos una referencia final para usarla dentro del botón
+            final ImageIcon iconFinal = icon;
+
             JButton b = new JButton(escalarIcono(icon, 120, 120));
             b.setBackground(new Color(35, 35, 35));
             b.setFocusPainted(false);
             b.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
             b.addActionListener(e -> {
-                UserSession.set(usuario, icon);
-                new MainGuiWindow(usuario, icon).setVisible(true);
-                dispose();
+                // 1. Guardar en Base de Datos
+                boolean exito = ConexionBD.crearUsuario(nombreTemp, gmailTemp, passTemp, nombreArchivo);
+
+                if (exito) {
+                    // --- CAMBIO CLAVE AQUÍ ---
+                    JOptionPane.showMessageDialog(this, "¡Bienvenido a DeustoFlix, " + nombreTemp + "!");
+
+                    // 2. Establecer la sesión (usando tu clase UserSession)
+                    UserSession.set(nombreTemp, iconFinal); 
+
+                    // 3. Abrir DIRECTAMENTE la aplicación principal
+                    new MainGuiWindow(nombreTemp, iconFinal).setVisible(true);
+                    
+                    // Cerrar esta ventana de registro
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al crear usuario. Quizá el nombre ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             });
+            
             grid.add(b);
         }
 
         add(grid, BorderLayout.CENTER);
-
         getContentPane().setBackground(new Color(20, 20, 20));
     }
 
-    private List<ImageIcon> cargarAvataresDesdeRecursos() {
-        String[] nombres = {
-                "perfil1.png", "ferfil2.png", "ferfil3.png", "ferfil4.png",
-                "ferfil5.png", "ferfil6.png", "ferfil7.png", "ferfil8.png"
-        };
-        List<ImageIcon> lista = new ArrayList<>();
-        ClassLoader cl = getClass().getClassLoader();
-        for (String nombre : nombres) {
-            String[] rutas = {
-                    nombre,                       // si están directamente en resources/
-                    "Imagenes/" + nombre,        // si están en resources/Imagenes/
-                    "resources/" + nombre,       // por si el IDE copia con prefijo
-                    "resources/Imagenes/" + nombre
-            };
-            for (String ruta : rutas) {
-                var url = cl.getResource(ruta);
-                if (url != null) {
-                    lista.add(new ImageIcon(url));
-                    break;
-                }
-            }
-        }
-        return lista;
-    }
-
     private ImageIcon escalarIcono(ImageIcon icon, int w, int h) {
-        if (icon == null || icon.getIconWidth() <= 0 || icon.getIconHeight() <= 0) return icon;
+        if (icon == null || icon.getIconWidth() <= 0) return icon;
         Image img = icon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
-    }
-
-    private List<ImageIcon> crearAvatares(String usuario) {
-        String inicial = usuario != null && !usuario.isBlank() ? usuario.substring(0, 1).toUpperCase() : "U";
-        Color[] colores = {
-                new Color(0x5C7CFA),
-                new Color(0xFF6B6B),
-                new Color(0x51CF66),
-                new Color(0xFCC419),
-                new Color(0x845EF7),
-                new Color(0x15AABF)
-        };
-        List<ImageIcon> lista = new ArrayList<>();
-        for (Color c : colores) {
-            lista.add(new ImageIcon(crearImagenAvatar(inicial, c)));
-        }
-        return lista;
-    }
-
-    private Image crearImagenAvatar(String letra, Color color) {
-        int size = 96;
-        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(color);
-        g2.fillOval(0, 0, size, size);
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 46));
-        FontMetrics fm = g2.getFontMetrics();
-        int x = (size - fm.stringWidth(letra)) / 2;
-        int y = (size - fm.getHeight()) / 2 + fm.getAscent();
-        g2.drawString(letra, x, y);
-        g2.dispose();
-        return img;
     }
 }

@@ -3,17 +3,19 @@ package gui;
 import java.awt.*;
 import javax.swing.*;
 
-import databases.ConexionBD;
+// IMPORTANTE: Importamos la ventana del siguiente paso
+import gui.avatar.VentanaSeleccionAvatar; 
 
 public class VentanaCrearUsuario extends JFrame {
 
     public VentanaCrearUsuario() {
         setSize(1200, 800);
-        setTitle("Crear Usuario");
+        setTitle("Crear Usuario - Paso 1");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Botón Salir
         JButton exit = new JButton("Exit");
         exit.setPreferredSize(new Dimension(75, 25));
         exit.setFont(new Font("Arial", Font.BOLD, 16));
@@ -27,54 +29,48 @@ public class VentanaCrearUsuario extends JFrame {
         panelExit.add(exit);
         add(panelExit, BorderLayout.NORTH);
 
+        // Campos
         JTextField nombreUsuario = new JTextField();
-        nombreUsuario.setPreferredSize(new Dimension(300, 40));
-        nombreUsuario.setBackground(new Color(30, 30, 30));
-        nombreUsuario.setForeground(Color.WHITE);
-        nombreUsuario.setFont(new Font("Arial", Font.PLAIN, 18));
+        estilarCampo(nombreUsuario);
 
         JLabel nombreUsuarioLabel = new JLabel("Nombre de Usuario");
-        nombreUsuarioLabel.setForeground(Color.WHITE);
-        nombreUsuarioLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        estilarLabel(nombreUsuarioLabel);
 
         JPasswordField contraseñaUsuario = new JPasswordField();
-        contraseñaUsuario.setPreferredSize(new Dimension(300, 40));
-        contraseñaUsuario.setBackground(new Color(30, 30, 30));
-        contraseñaUsuario.setForeground(Color.WHITE);
-        contraseñaUsuario.setFont(new Font("Arial", Font.PLAIN, 18));
+        estilarCampo(contraseñaUsuario);
 
         JLabel contraseñaUsuarioLabel = new JLabel("Contraseña");
-        contraseñaUsuarioLabel.setForeground(Color.WHITE);
-        contraseñaUsuarioLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        estilarLabel(contraseñaUsuarioLabel);
 
         JTextField gmailUsuario = new JTextField();
-        gmailUsuario.setPreferredSize(new Dimension(300, 40));
-        gmailUsuario.setBackground(new Color(30, 30, 30));
-        gmailUsuario.setForeground(Color.WHITE);
-        gmailUsuario.setFont(new Font("Arial", Font.PLAIN, 18));
+        estilarCampo(gmailUsuario);
 
         JLabel gmailUsuarioLabel = new JLabel("Gmail");
-        gmailUsuarioLabel.setForeground(Color.WHITE);
-        gmailUsuarioLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        estilarLabel(gmailUsuarioLabel);
 
-        JButton btnCrear = new JButton("Crear Usuario");
-        btnCrear.setPreferredSize(new Dimension(200, 40));
-        btnCrear.setFont(new Font("Arial", Font.BOLD, 16));
+        // BOTÓN SIGUIENTE
+        JButton btnSiguiente = new JButton("Siguiente");
+        btnSiguiente.setPreferredSize(new Dimension(200, 40));
+        btnSiguiente.setFont(new Font("Arial", Font.BOLD, 16));
 
-        btnCrear.addActionListener(e -> {
+        btnSiguiente.addActionListener(e -> {
             String nombre = nombreUsuario.getText();
             String gmail = gmailUsuario.getText();
             String pass = new String(contraseñaUsuario.getPassword());
 
-            if (ConexionBD.crearUsuario(nombre, gmail, pass)) {
-                JOptionPane.showMessageDialog(this, "Usuario creado correctamente");
-                new VentanaInicioSesion().setVisible(true);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al crear usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            // Validación simple antes de pasar al siguiente paso
+            if(nombre.isEmpty() || gmail.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, rellena todos los campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
             }
+
+            // AQUÍ ESTÁ EL CAMBIO:
+            // No guardamos todavía. Abrimos la selección de avatar pasando los datos.
+            new VentanaSeleccionAvatar(nombre, gmail, pass).setVisible(true);
+            dispose(); // Cerramos esta ventana
         });
 
+        // Layout
         JPanel panelForm = new JPanel(new GridBagLayout());
         panelForm.setBackground(new Color(30, 30, 30));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -89,9 +85,21 @@ public class VentanaCrearUsuario extends JFrame {
         gbc.gridy = 3; panelForm.add(contraseñaUsuario, gbc);
         gbc.gridy = 4; panelForm.add(gmailUsuarioLabel, gbc);
         gbc.gridy = 5; panelForm.add(gmailUsuario, gbc);
-        gbc.gridy = 6; panelForm.add(btnCrear, gbc);
+        gbc.gridy = 6; panelForm.add(btnSiguiente, gbc);
 
         add(panelForm, BorderLayout.CENTER);
     }
-}
 
+    // Métodos auxiliares para no repetir código de estilo
+    private void estilarLabel(JLabel lbl) {
+        lbl.setForeground(Color.WHITE);
+        lbl.setFont(new Font("Arial", Font.BOLD, 16));
+    }
+    private void estilarCampo(JTextField txt) {
+        txt.setPreferredSize(new Dimension(300, 40));
+        txt.setBackground(new Color(30, 30, 30));
+        txt.setForeground(Color.WHITE);
+        txt.setFont(new Font("Arial", Font.PLAIN, 18));
+        txt.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+    }
+}

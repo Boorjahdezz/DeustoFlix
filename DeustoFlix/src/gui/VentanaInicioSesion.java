@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import databases.ConexionBD;
-import gui.avatar.VentanaSeleccionAvatar;
+import gui.avatar.UserSession; // Asegúrate de importar esto
 
 public class VentanaInicioSesion extends JFrame {
 
@@ -42,14 +42,35 @@ public class VentanaInicioSesion extends JFrame {
         btnIniciar.setPreferredSize(new Dimension(200, 40));
         btnIniciar.setFont(new Font("Arial", Font.BOLD, 16));
 
+        // --- ACCIÓN DEL BOTÓN INICIAR SESIÓN ---
         btnIniciar.addActionListener(e -> {
             String nombre = nombreUsuario.getText();
             String pass = new String(contraseñaUsuario.getPassword());
 
             if (ConexionBD.loginUsuario(nombre, pass)) {
-                JOptionPane.showMessageDialog(this, "Login exitoso");
-                new VentanaSeleccionAvatar(nombre).setVisible(true);
-                dispose();
+                // 1. Recuperamos el nombre del archivo de la foto
+                String fotoFile = ConexionBD.obtenerFotoUsuario(nombre);
+                
+                // 2. Cargamos la imagen desde los recursos
+                ImageIcon iconoUsuario = null;
+                if (fotoFile != null && !fotoFile.isEmpty()) {
+                    // Buscamos la imagen en el classpath (igual que en selección de avatar)
+                    java.net.URL url = getClass().getClassLoader().getResource(fotoFile);
+                    if (url == null) url = getClass().getClassLoader().getResource("Imagenes/" + fotoFile);
+                    
+                    if (url != null) {
+                        iconoUsuario = new ImageIcon(url);
+                        // Escalamos un poco la imagen para que no sea gigante
+                        Image img = iconoUsuario.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                        iconoUsuario = new ImageIcon(img);
+                    }
+                }
+
+                // 3. Guardamos sesión y abrimos la ventana principal
+                UserSession.set(nombre, iconoUsuario);
+                new MainGuiWindow(nombre, iconoUsuario).setVisible(true);
+                
+                dispose(); // Cerramos la ventana de login
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -90,6 +111,3 @@ public class VentanaInicioSesion extends JFrame {
         add(panelExit, BorderLayout.NORTH);
     }
 }
-
-
-
