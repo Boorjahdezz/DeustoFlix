@@ -9,6 +9,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,8 +21,16 @@ public class MainGuiWindow extends JFrame {
 
     private JPanel contentPanel;
     private MediaRepository repo;
+    private final String usuario;
+    private final ImageIcon avatar;
 
     public MainGuiWindow() {
+        this("Invitado", null);
+    }
+
+    public MainGuiWindow(String usuario, ImageIcon avatar) {
+        this.usuario = usuario;
+        this.avatar = avatar;
 
         setTitle("DeustoFlix");
         setSize(1200, 800);
@@ -31,9 +40,7 @@ public class MainGuiWindow extends JFrame {
 
         repo = new MediaRepository();
 
-        //barra d e arriba
-        JPanel topBar = new JPanel();
-        topBar.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(20, 20, 20));
 
         Dimension tamañoBoton = new Dimension(130, 35);
@@ -48,10 +55,26 @@ public class MainGuiWindow extends JFrame {
         estilizarBoton(btnSeries, tamañoBoton);
         estilizarBoton(btnRanking, tamañoBoton);
 
-        topBar.add(btnInicio);
-        topBar.add(btnPeliculas);
-        topBar.add(btnSeries);
-        topBar.add(btnRanking);
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        navPanel.setOpaque(false);
+        navPanel.add(btnInicio);
+        navPanel.add(btnPeliculas);
+        navPanel.add(btnSeries);
+        navPanel.add(btnRanking);
+
+        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        userPanel.setOpaque(false);
+        JLabel userLabel = new JLabel(usuario);
+        userLabel.setForeground(Color.WHITE);
+        userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        if (avatar != null) {
+            userLabel.setIcon(escalarIcono(avatar, 36, 36));
+            userLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        }
+        userPanel.add(userLabel);
+
+        topBar.add(navPanel, BorderLayout.WEST);
+        topBar.add(userPanel, BorderLayout.EAST);
 
         add(topBar, BorderLayout.NORTH);
 
@@ -138,6 +161,12 @@ public class MainGuiWindow extends JFrame {
     private void refrescar() {
         contentPanel.revalidate();
         contentPanel.repaint();
+    }
+
+    private ImageIcon escalarIcono(ImageIcon icon, int w, int h) {
+        if (icon == null || icon.getIconWidth() <= 0 || icon.getIconHeight() <= 0) return null;
+        Image img = icon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
     }
 
     //tabla para las mejores peliculaws  y eso

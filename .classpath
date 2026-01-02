@@ -3,4 +3,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="DeustoFlix/src"/>
 	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="DeustoFlix/lib/sqlite-jdbc-3.45.2.0.jar"/>
 </classpath>

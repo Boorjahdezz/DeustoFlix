@@ -2,6 +2,7 @@ package databases;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
@@ -93,13 +94,17 @@ public class ConexionBD {
     }
 
     public static void cargarPeliculasDesdeCSV() {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                ConexionBD.class.getClassLoader().getResourceAsStream("peliculas.csv")))) {
-            if (br == null) throw new Exception("No se encontró 'peliculas.csv'");
+        var stream = ConexionBD.class.getClassLoader().getResourceAsStream("peliculas.csv");
+        if (stream == null) {
+            System.err.println("No se encontró 'peliculas.csv' en el classpath (incluye src/resources al ejecutar).");
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             br.readLine(); // saltar cabecera
             String linea;
             while ((linea = br.readLine()) != null) {
-                String[] campos = linea.split(",");
+                String[] campos = linea.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 if (campos.length >= 6) {
                     String titulo = campos[0].trim();
                     String descripcion = campos[1].trim();

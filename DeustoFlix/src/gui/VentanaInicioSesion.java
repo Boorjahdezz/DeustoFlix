@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import databases.ConexionBD;
+import gui.avatar.VentanaSeleccionAvatar;
 
 public class VentanaInicioSesion extends JFrame {
 
@@ -47,7 +48,7 @@ public class VentanaInicioSesion extends JFrame {
 
             if (ConexionBD.loginUsuario(nombre, pass)) {
                 JOptionPane.showMessageDialog(this, "Login exitoso");
-                new MainGuiWindow().setVisible(true);
+                new VentanaSeleccionAvatar(nombre).setVisible(true);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
