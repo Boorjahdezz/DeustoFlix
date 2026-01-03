@@ -20,7 +20,6 @@ public class ConexionBD {
             throw new SQLException("Driver SQLite no encontrado", e); 
         }
 
-        // Crear carpeta si no existe
         File dbFile = new File("Basededatos/deustoflix.db");
         File parentDir = dbFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
@@ -84,7 +83,6 @@ public class ConexionBD {
         }
     }
 
-    // --- NUEVO MÉTODO PARA RECUPERAR LA FOTO ---
     public static String obtenerFotoUsuario(String nombre) {
         String sql = "SELECT foto FROM usuarios WHERE nombre = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -98,7 +96,51 @@ public class ConexionBD {
         }
         return null; 
     }
-    // -------------------------------------------
+
+    // --- MÉTODOS AÑADIDOS PARA EDITAR DATOS ---
+    
+    // 1. Obtener datos actuales (para rellenar los campos al editar)
+    public static String[] obtenerDatosUsuario(String nombre) {
+        String sql = "SELECT gmail, contrasenya FROM usuarios WHERE nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, nombre);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return new String[]{ rs.getString("gmail"), rs.getString("contrasenya") };
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 2. Actualizar usuario
+    public static boolean actualizarUsuario(String nombre, String nuevoGmail, String nuevaPass) {
+        String sql = "UPDATE usuarios SET gmail = ?, contrasenya = ? WHERE nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, nuevoGmail); 
+            pst.setString(2, nuevaPass);
+            pst.setString(3, nombre);
+            int rows = pst.executeUpdate(); 
+            return rows > 0;
+        } catch (SQLException e) { 
+            System.err.println("Error SQL al actualizar usuario: " + e.getMessage());
+            return false; 
+        }
+    }
+    // ------------------------------------------
+
+    public static boolean eliminarUsuario(String nombre) {
+        String sql = "DELETE FROM usuarios WHERE nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, nombre);
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0; 
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar usuario: " + e.getMessage());
+            return false;
+        }
+    }
 
     public static void insertarContenido(MediaItem item) {
         String sql = "INSERT INTO contenido(titulo,tipo,genero,categoria,descripcion,duracion,valoracion) VALUES(?,?,?,?,?,?,?)";
