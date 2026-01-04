@@ -10,7 +10,6 @@ import domain.*;
 
 public class ConexionBD {
 
-    // Ruta a la carpeta y archivo
     private static final String URL = "jdbc:sqlite:Basededatos/deustoflix.db";
 
     private static Connection getConnection() throws SQLException {
@@ -55,6 +54,8 @@ public class ConexionBD {
         }
     }
 
+    // --- GESTIÓN DE USUARIOS ---
+
     public static boolean crearUsuario(String nombre, String gmail, String contrasenya, String foto) {
         String sql = "INSERT INTO usuarios(nombre, gmail, contrasenya, foto) VALUES(?,?,?,?)";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -97,9 +98,6 @@ public class ConexionBD {
         return null; 
     }
 
-    // --- MÉTODOS AÑADIDOS PARA EDITAR DATOS ---
-    
-    // 1. Obtener datos actuales (para rellenar los campos al editar)
     public static String[] obtenerDatosUsuario(String nombre) {
         String sql = "SELECT gmail, contrasenya FROM usuarios WHERE nombre = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -114,7 +112,6 @@ public class ConexionBD {
         return null;
     }
 
-    // 2. Actualizar usuario
     public static boolean actualizarUsuario(String nombre, String nuevoGmail, String nuevaPass) {
         String sql = "UPDATE usuarios SET gmail = ?, contrasenya = ? WHERE nombre = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -128,7 +125,21 @@ public class ConexionBD {
             return false; 
         }
     }
-    // ------------------------------------------
+
+    // --- NUEVO MÉTODO PARA CAMBIAR FOTO ---
+    public static boolean actualizarFotoUsuario(String nombre, String nuevaRutaFoto) {
+        String sql = "UPDATE usuarios SET foto = ? WHERE nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, nuevaRutaFoto);
+            pst.setString(2, nombre);
+            int rows = pst.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            System.err.println("Error SQL al actualizar foto: " + e.getMessage());
+            return false;
+        }
+    }
+    // --------------------------------------
 
     public static boolean eliminarUsuario(String nombre) {
         String sql = "DELETE FROM usuarios WHERE nombre = ?";
@@ -141,6 +152,8 @@ public class ConexionBD {
             return false;
         }
     }
+
+    // --- GESTIÓN DE CONTENIDO ---
 
     public static void insertarContenido(MediaItem item) {
         String sql = "INSERT INTO contenido(titulo,tipo,genero,categoria,descripcion,duracion,valoracion) VALUES(?,?,?,?,?,?,?)";
@@ -185,6 +198,9 @@ public class ConexionBD {
     public static void cargarPeliculasDesdeCSV() {
         var stream = ConexionBD.class.getClassLoader().getResourceAsStream("peliculas.csv");
         if (stream == null) {
+            try { stream = new java.io.FileInputStream("src/peliculas.csv"); } catch(Exception e) {}
+        }
+        if (stream == null) {
             System.err.println("No se encontró 'peliculas.csv'.");
             return;
         }
@@ -205,7 +221,44 @@ public class ConexionBD {
                 }
             }
         } catch (Exception e) { 
-            System.err.println("Error cargando CSV: " + e.getMessage()); 
+            System.err.println("Error cargando CSV Peliculas: " + e.getMessage()); 
+        }
+    }
+
+    public static void cargarSeriesDesdeCSV() {
+        var stream = ConexionBD.class.getClassLoader().getResourceAsStream("series.csv");
+        if (stream == null) {
+            try { stream = new java.io.FileInputStream("src/series.csv"); } catch(Exception e) {}
+        }
+        if (stream == null) {
+            System.err.println("No se encontró 'series.csv'.");
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            br.readLine(); 
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] campos = linea.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (campos.length >= 6) {
+                    String titulo = campos[0].trim();
+                    String descripcion = campos[1].trim();
+                    Genero genero = null;
+                    try {
+                        genero = Genero.valueOf(campos[2].trim().toUpperCase());
+                    } catch (IllegalArgumentException ex) {
+                        genero = Genero.DRAMA; 
+                    }
+                    Categoria categoria = new Categoria(campos[3].trim());
+                    int dur = Integer.parseInt(campos[4].trim());
+                    double val = Double.parseDouble(campos[5].trim());
+                    
+                    insertarContenido(new Serie(titulo, descripcion, genero, categoria, val, dur));
+                }
+            }
+            System.out.println("Series cargadas correctamente.");
+        } catch (Exception e) { 
+            System.err.println("Error cargando CSV Series: " + e.getMessage()); 
         }
     }
 }

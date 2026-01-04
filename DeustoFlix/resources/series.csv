@@ -1,0 +1,164 @@
+Titulo,Descripcion,Genero,Categoria,Duracion,Valoracion
+Breaking Bad,Un profesor de quimica fabrica metanfetamina para su familia,DRAMA,Crimen,50,9.5
+Game of Thrones,Nobles familias luchan por el control del Trono de Hierro,FANTASIA,Epico,60,9.3
+The Wire,Una mirada realista al narcotrafico en Baltimore,DRAMA,Policiaco,60,9.3
+Chernobyl,Dramatizacion de la catastrofe nuclear de 1986,DRAMA,Historico,60,9.4
+The Sopranos,La vida de un capo de la mafia en Nueva Jersey,DRAMA,Crimen,55,9.2
+Avatar: The Last Airbender,Un niño debe dominar los cuatro elementos para salvar el mundo,FANTASIA,Animacion,23,9.3
+Rick and Morty,Las aventuras de un cientifico loco y su nieto,CIENCIA_FICCION,Animacion,22,9.1
+Sherlock,Adaptacion moderna de las historias de Conan Doyle,DRAMA,Misterio,90,9.1
+Fullmetal Alchemist: Brotherhood,Dos hermanos buscan la piedra filosofal para recuperar sus cuerpos,FANTASIA,Anime,24,9.1
+The Twilight Zone,Serie de antologia sobre lo extraño y lo paranormal,CIENCIA_FICCION,Misterio,51,9.0
+Batman: The Animated Series,El caballero oscuro lucha contra el crimen en Gotham,ACCION,Animacion,23,9.0
+Arcane,El origen de dos campeonas de League of Legends,CIENCIA_FICCION,Animacion,40,9.0
+Attack on Titan,La humanidad se enfrenta a titanes devoradores de hombres,FANTASIA,Anime,24,9.0
+The Office,Falso documental sobre la vida en una oficina,COMEDIA,Sitcom,22,8.9
+Firefly,Un grupo de renegados viaja por el espacio,CIENCIA_FICCION,Western,44,9.0
+True Detective,Antologia sobre detectives y casos oscuros,DRAMA,Crimen,55,8.9
+Fargo,Crimenes, humor negro y nieve en Minnesota,DRAMA,Crimen,53,8.9
+Better Call Saul,La transformacion del abogado Jimmy McGill,DRAMA,Legal,46,8.9
+Friends,Las vidas de seis amigos en Manhattan,COMEDIA,Sitcom,22,8.9
+Seinfeld,Cuatro amigos neuroticos en Nueva York,COMEDIA,Sitcom,22,8.8
+Black Mirror,Relatos distopicos sobre la tecnologia moderna,CIENCIA_FICCION,Antologia,60,8.8
+Narcos,El ascenso y caida de Pablo Escobar,DRAMA,Biografico,49,8.8
+Stranger Things,Un pueblo descubre misterios sobrenaturales,CIENCIA_FICCION,Terror,50,8.7
+The Mandalorian,Un cazarrecompensas viaja por la galaxia,CIENCIA_FICCION,Aventura,40,8.7
+Dark,Desapariciones y viajes en el tiempo en Alemania,CIENCIA_FICCION,Misterio,60,8.8
+The Crown,La historia del reinado de Isabel II,DRAMA,Historico,58,8.6
+Peaky Blinders,Una banda de gansters en la Inglaterra de 1919,DRAMA,Historico,60,8.8
+BoJack Horseman,Un caballo actor lidia con la depresion y la fama,COMEDIA,Dramedia,25,8.8
+Succession,Lucha de poder en una familia dueña de un imperio de medios,DRAMA,Satira,60,8.8
+Invincible,Un joven heroe descubre la verdad sobre su padre,ACCION,Animacion,50,8.7
+The Boys,Un grupo de vigilantes lucha contra superheroes corruptos,ACCION,Satira,60,8.7
+House M.D.,Un medico brillante pero asocial resuelve casos medicos,DRAMA,Medico,44,8.7
+Fleabag,Una mujer joven intenta navegar su vida en Londres,COMEDIA,Dramedia,27,8.7
+Mindhunter,Agentes del FBI entrevistan a asesinos en serie,DRAMA,Crimen,60,8.6
+Severance,Empleados separan sus memorias laborales de las personales,CIENCIA_FICCION,Thriller,50,8.7
+Daredevil,Un abogado ciego combate el crimen por la noche,ACCION,Superheroes,54,8.6
+The Queens Gambit,Una huerfana prodigio del ajedrez busca ser la mejor,DRAMA,Deporte,60,8.6
+Cyberpunk: Edgerunners,Un chico de la calle se convierte en mercenario,CIENCIA_FICCION,Anime,24,8.3
+House of Cards,Un politico despiadado escala hacia el poder,DRAMA,Politica,50,8.7
+Vikings,Las aventuras del legendario heroe nordico Ragnar Lothbrok,ACCION,Historico,44,8.5
+Money Heist,Un grupo de ladrones asalta la Fabrica de Moneda,ACCION,Thriller,50,8.2
+Squid Game,Cientos de jugadores aceptan una invitacion mortal,DRAMA,Thriller,55,8.0
+Wednesday,Merlina Addams investiga una ola de asesinatos,FANTASIA,Misterio,45,8.1
+The Last of Us,Un contrabandista escolta a una niña inmune,DRAMA,Terror,50,8.8
+Andor,El camino de Cassian Andor hacia la rebelion,CIENCIA_FICCION,Espionaje,40,8.4
+Ted Lasso,Un entrenador de futbol americano dirige un equipo ingles,COMEDIA,Deporte,30,8.8
+Reacher,Un policia militar retirado es acusado de asesinato,ACCION,Crimen,50,8.1
+The Witcher,Geralt de Rivia caza monstruos en un mundo fantastico,FANTASIA,Aventura,60,8.1
+Loki,El villano de Marvel viaja a traves del tiempo,CIENCIA_FICCION,Fantasia,50,8.2
+Westworld,Un parque tematico futurista donde los robots se rebelan,CIENCIA_FICCION,Western,60,8.5
+Mad Men,La vida de los publicistas en los años 60,DRAMA,Epoca,47,8.7
+Downton Abbey,La vida de la familia Crawley y sus sirvientes,DRAMA,Epoca,58,8.7
+Twin Peaks,Un agente del FBI investiga un asesinato en un pueblo extraño,DRAMA,Misterio,47,8.8
+Lost,Supervivientes de un accidente aereo en una isla misteriosa,CIENCIA_FICCION,Aventura,44,8.3
+The X-Files,Dos agentes del FBI investigan casos paranormales,CIENCIA_FICCION,Misterio,45,8.6
+Doctor Who,Un alienigena viaja por el tiempo en una cabina telefonica,CIENCIA_FICCION,Aventura,45,8.6
+Battlestar Galactica,Humanos huyen de robots cylons buscando la Tierra,CIENCIA_FICCION,Espacial,44,8.7
+Neon Genesis Evangelion,Adolescentes pilotan robots para salvar la humanidad,CIENCIA_FICCION,Anime,24,8.5
+Cowboy Bebop,Cazarrecompensas viajan por el espacio en su nave,CIENCIA_FICCION,Anime,24,8.9
+Death Note,Un estudiante encuentra un cuaderno que mata gente,FANTASIA,Anime,24,9.0
+One Punch Man,Un heroe derrota a todos los enemigos de un golpe,ACCION,Anime,24,8.7
+Demon Slayer,Un joven caza demonios para salvar a su hermana,FANTASIA,Anime,24,8.6
+Jujutsu Kaisen,Hechiceros luchan contra maldiciones,FANTASIA,Anime,24,8.5
+Vinland Saga,Vikingos y venganza en el siglo XI,ACCION,Anime,24,8.8
+Steins;Gate,Estudiantes descubren como enviar mensajes al pasado,CIENCIA_FICCION,Anime,24,8.8
+Monster,Un neurocirujano persigue a un ex paciente psicopata,DRAMA,Anime,24,8.7
+Haikyuu,Estudiantes compiten en voleibol de alto nivel,COMEDIA,Anime,24,8.7
+Hunter x Hunter,Un niño busca a su padre y se convierte en cazador,FANTASIA,Anime,24,9.0
+Code Geass,Un joven lidera una rebelion contra un imperio,CIENCIA_FICCION,Anime,24,8.7
+Dragon Ball Z,Goku defiende la Tierra de villanos intergalacticos,ACCION,Anime,24,8.8
+Naruto Shippuden,Un ninja busca reconocimiento y salvar a su amigo,ACCION,Anime,24,8.7
+One Piece,Piratas buscan el tesoro definitivo,FANTASIA,Anime,24,8.9
+Bleach,Un adolescente obtiene poderes de segador de almas,ACCION,Anime,24,8.2
+My Hero Academia,Estudiantes aprenden a ser superheroes,ACCION,Anime,24,8.3
+Brooklyn Nine-Nine,Comedia sobre una comisaria de policia en NY,COMEDIA,Sitcom,22,8.4
+Parks and Recreation,Funcionarios publicos en un pueblo de Indiana,COMEDIA,Sitcom,22,8.6
+Community,Un grupo de estudio en una universidad comunitaria,COMEDIA,Sitcom,22,8.5
+Its Always Sunny in Philadelphia,Cinco amigos egoistas regentan un bar,COMEDIA,Sitcom,22,8.8
+Arrested Development,Una familia rica pierde todo y debe convivir,COMEDIA,Sitcom,22,8.7
+Curb Your Enthusiasm,La vida ficticia del creador de Seinfeld,COMEDIA,Sitcom,30,8.8
+Modern Family,Tres familias relacionadas enfrentan la vida moderna,COMEDIA,Sitcom,22,8.5
+How I Met Your Mother,Un padre cuenta a sus hijos como conocio a su madre,COMEDIA,Sitcom,22,8.3
+The Big Bang Theory,Un grupo de cientificos y su vecina aspirante a actriz,COMEDIA,Sitcom,22,8.2
+Silicon Valley,Programadores intentan triunfar en el mundo tecnologico,COMEDIA,Sitcom,30,8.5
+Barry,Un asesino a sueldo quiere ser actor,COMEDIA,Crimen,30,8.4
+Atlanta,Dos primos buscan exito en la escena del rap,COMEDIA,Drama,30,8.6
+What We Do in the Shadows,Falso documental sobre vampiros compañeros de piso,COMEDIA,Fantasia,30,8.6
+The Marvelous Mrs. Maisel,Una ama de casa se convierte en comediante en los 50,COMEDIA,Dramedia,57,8.7
+Shameless,Una familia disfuncional en Chicago,COMEDIA,Dramedia,46,8.5
+Dexter,Un forense es asesino en serie de criminales,DRAMA,Crimen,55,8.6
+Hannibal,Un perfilador del FBI trabaja con un psiquiatra canibal,DRAMA,Terror,44,8.5
+Mr. Robot,Un hacker sufre ansiedad social y paranoia,DRAMA,Thriller,49,8.5
+Sons of Anarchy,Un club de moteros opera ilegalmente en California,DRAMA,Crimen,45,8.5
+Justified,Un alguacil impone su ley en Kentucky,DRAMA,Crimen,44,8.6
+The Shield,Policias corruptos en Los Angeles,DRAMA,Policiaco,47,8.7
+Homeland,Una agente de la CIA sospecha de un heroe de guerra,DRAMA,Espionaje,55,8.3
+The Americans,Espias rusos viven como una familia americana,DRAMA,Espionaje,44,8.4
+Ozark,Un asesor financiero lava dinero para un cartel,DRAMA,Crimen,60,8.5
+Yellowstone,Una familia defiende el rancho mas grande de EEUU,DRAMA,Western,60,8.7
+1883,La precuela de Yellowstone sobre la colonizacion,DRAMA,Western,60,8.7
+Deadwood,La vida en un pueblo sin ley en 1870,DRAMA,Western,55,8.6
+Rome,Auge y caida del Imperio Romano,DRAMA,Historico,52,8.7
+Spartacus,La historia del gladiador que desafio a Roma,ACCION,Historico,55,8.5
+Band of Brothers,La historia de la Easy Company en la SGM,ACCION,Belico,60,9.4
+The Pacific,La lucha de los marines en el Pacifico,ACCION,Belico,60,8.3
+Generation Kill,Marines en la invasion de Irak de 2003,DRAMA,Belico,60,8.5
+Walking Dead,Supervivientes buscan refugio en un mundo zombie,DRAMA,Terror,44,8.1
+Supernatural,Dos hermanos cazan demonios y monstruos,FANTASIA,Terror,44,8.4
+Buffy the Vampire Slayer,Una joven elegida lucha contra vampiros,FANTASIA,Accion,44,8.3
+Smallville,La juventud de Clark Kent antes de ser Superman,CIENCIA_FICCION,Superheroes,42,7.5
+Arrow,Un millonario se convierte en vigilante con arco,ACCION,Superheroes,42,7.5
+The Flash,Un forense obtiene supervelocidad tras un accidente,ACCION,Superheroes,42,7.5
+Gotham,El origen de los villanos de Batman y el comisario Gordon,DRAMA,Crimen,44,7.8
+Legion,El hijo de Charles Xavier lidia con sus poderes mentales,CIENCIA_FICCION,Superheroes,60,8.2
+Doom Patrol,Un grupo de superheroes marginados y extraños,ACCION,Comedia,60,7.8
+Umbrella Academy,Hermanos con poderes se reunen tras la muerte de su padre,FANTASIA,Accion,60,7.9
+Sense8,Ocho desconocidos se conectan mentalmente,CIENCIA_FICCION,Drama,60,8.2
+Orphan Black,Una mujer descubre que es un clon,CIENCIA_FICCION,Thriller,44,8.3
+Fringe,El FBI investiga ciencia marginal y universos paralelos,CIENCIA_FICCION,Misterio,46,8.4
+Person of Interest,Una IA predice crimenes antes de que ocurran,ACCION,Thriller,43,8.5
+24,Un agente antiterrorista lucha contra el reloj,ACCION,Thriller,44,8.4
+Prison Break,Un ingeniero entra en prision para sacar a su hermano,ACCION,Thriller,44,8.3
+Lost in Space,Una familia se pierde en el espacio colonizando planetas,CIENCIA_FICCION,Aventura,60,7.3
+Altered Carbon,La conciencia se transfiere entre cuerpos en el futuro,CIENCIA_FICCION,Cyberpunk,60,7.9
+The Expanse,Conflicto politico en un sistema solar colonizado,CIENCIA_FICCION,Espacial,45,8.5
+Star Trek: The Next Generation,La tripulacion del Enterprise explora la galaxia,CIENCIA_FICCION,Aventura,44,8.7
+Star Trek: Deep Space Nine,Una estacion espacial cerca de un agujero de gusano,CIENCIA_FICCION,Aventura,44,8.1
+Star Wars: The Clone Wars,Las batallas entre la Republica y los Separatistas,CIENCIA_FICCION,Animacion,22,8.4
+Star Wars: Rebels,El inicio de la rebelion contra el Imperio,CIENCIA_FICCION,Animacion,22,8.0
+Love Death and Robots,Antologia de cortos animados de ciencia ficcion,CIENCIA_FICCION,Antologia,15,8.4
+Castlevania,Un cazador de vampiros lucha contra Dracula,FANTASIA,Animacion,23,8.3
+Dota: Dragons Blood,Un caballero dragon lucha contra demonios,FANTASIA,Animacion,25,7.8
+Blue Eye Samurai,Una mestiza busca venganza en el Japon feudal,ACCION,Animacion,45,8.7
+Scavengers Reign,Supervivientes en un planeta alienigena hermoso y letal,CIENCIA_FICCION,Animacion,25,8.7
+Pantheon,Inteligencia cargada a la nube y conspiraciones,CIENCIA_FICCION,Animacion,40,8.1
+Primal,Un cavernicola y un dinosaurio sobreviven juntos,ACCION,Animacion,22,8.7
+Samurai Jack,Un samurai viaja al futuro para vencer a un demonio,ACCION,Animacion,22,8.5
+Gravity Falls,Mellizos pasan el verano investigando misterios,COMEDIA,Animacion,22,8.9
+Adventure Time,Un niño y su perro magico en la tierra de Ooo,FANTASIA,Animacion,11,8.6
+Regular Show,Dos amigos animales intentan evitar trabajar,COMEDIA,Animacion,11,8.5
+Malcolm in the Middle,Un niño genio vive con su familia disfuncional,COMEDIA,Sitcom,22,8.2
+Scrubs,Internos de medicina aprenden sobre la vida y la muerte,COMEDIA,Dramedia,22,8.4
+Entourage,Un joven actor y sus amigos en Hollywood,COMEDIA,Dramedia,28,8.4
+Californication,Un escritor mujeriego intenta criar a su hija,COMEDIA,Dramedia,28,8.3
+Weeds,Una madre viuda vende marihuana para mantener su estatus,COMEDIA,Drama,28,7.9
+Desperate Housewives,Secretos de amas de casa en un suburbio perfecto,DRAMA,Misterio,45,7.6
+Greys Anatomy,Dramas personales y profesionales de cirujanos,DRAMA,Medico,41,7.6
+This Is Us,La historia de la familia Pearson a traves de decadas,DRAMA,Romance,45,8.7
+The Handmaids Tale,Una mujer obligada a la servidumbre sexual en una distopia,DRAMA,Distopia,60,8.4
+Big Little Lies,Madres de Monterey envueltas en un asesinato,DRAMA,Misterio,60,8.5
+Euphoria,Adolescentes lidian con drogas y traumas,DRAMA,Juvenil,55,8.3
+Sex Education,El hijo de una terapeuta sexual da consejos en la escuela,COMEDIA,Juvenil,45,8.3
+Elite,Misterios y asesinatos en un colegio de elite español,DRAMA,Thriller,50,7.3
+Dark Crystal: Age of Resistance,Gelflings inician una rebelion contra los Skeksis,FANTASIA,Aventura,50,8.4
+Shadow and Bone,Una cartografa descubre un poder para salvar su pais,FANTASIA,Aventura,50,7.5
+Sweet Tooth,Un niño hibrido ciervo busca a su madre,FANTASIA,Aventura,50,7.8
+Good Omens,Un angel y un demonio intentan detener el apocalipsis,FANTASIA,Comedia,55,8.0
+American Gods,Guerra entre los viejos y los nuevos dioses,FANTASIA,Drama,60,7.6
+Penny Dreadful,Personajes literarios de terror en el Londres victoriano,DRAMA,Terror,60,8.2
+The Haunting of Hill House,Hermanos enfrentan fantasmas de su pasado,DRAMA,Terror,60,8.6
+Midnight Mass,Eventos milagrosos y aterradores en una isla aislada,DRAMA,Terror,65,7.7
+Alice in Borderland,Jovenes atrapados en un Tokio vacio juegan para vivir,ACCION,Thriller,50,7.7
+Kingdom,Zombis en la era Joseon de Corea,ACCION,Terror,50,8.3
