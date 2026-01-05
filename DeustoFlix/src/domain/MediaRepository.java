@@ -157,4 +157,30 @@ public class MediaRepository {
         }
         return map;
     }
+    public ArrayList<MediaItem> buscarPorTitulo(String texto) {
+        // Llamamos al método recursivo empezando desde el índice 0
+        return buscarRecursivo(items, texto.toLowerCase(), 0);
+    }
+
+    /**
+     * Método PRIVADO recursivo que hace el trabajo real.
+     */
+    private ArrayList<MediaItem> buscarRecursivo(ArrayList<MediaItem> lista, String texto, int indice) {
+        
+        // --- 1. CASO BASE (El Freno) ---
+        if (indice >= lista.size()) {
+            return new ArrayList<>();
+        }
+
+        // --- 2. CASO RECURSIVO (La Llamada) ---
+        ArrayList<MediaItem> resultadosDelResto = buscarRecursivo(lista, texto, indice + 1);
+
+        // --- 3. PROCESO (El Trabajo) ---
+        MediaItem itemActual = lista.get(indice);
+        if (itemActual.getTitulo().toLowerCase().contains(texto)) {
+            resultadosDelResto.add(0, itemActual);
+        }
+
+        return resultadosDelResto;
+    }
 }

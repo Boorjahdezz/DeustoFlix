@@ -43,7 +43,7 @@ public class VentanaInicioSesion extends JFrame {
         captchaLabel.setForeground(Color.WHITE);
         captchaLabel.setFont(new Font("Arial", Font.BOLD, 16));
         
-        CaptchaVerificationPanel panelCaptcha = new CaptchaVerificationPanel();
+        panelCaptcha = new CaptchaVerificationPanel(); 
 
         JButton btnIniciar = new JButton("Iniciar Sesion");
         btnIniciar.setPreferredSize(new Dimension(200, 40));
@@ -72,13 +72,11 @@ public class VentanaInicioSesion extends JFrame {
                 int intentosRestantes = panelCaptcha.getIntentosRestantes();
                 
                 if (panelCaptcha.isBloqueado()) {
-                    // Se alcanzó el límite de intentos, el componente se bloqueó automáticamente
                     JOptionPane.showMessageDialog(this, 
                         "Has alcanzado el número máximo de intentos. Espera para continuar.", 
                         "Bloqueado", 
                         JOptionPane.ERROR_MESSAGE);
                 } else {
-                    // Aún quedan intentos
                     JOptionPane.showMessageDialog(this, 
                         "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, 
                         "Error CAPTCHA", 
@@ -86,6 +84,7 @@ public class VentanaInicioSesion extends JFrame {
                 }
                 return;
             }
+            
             if (ConexionBD.loginUsuario(nombre, pass)) {
                 // 1. Recuperamos el nombre del archivo de la foto
                 String fotoFile = ConexionBD.obtenerFotoUsuario(nombre);
@@ -93,23 +92,23 @@ public class VentanaInicioSesion extends JFrame {
                 // 2. Cargamos la imagen desde los recursos
                 ImageIcon iconoUsuario = null;
                 if (fotoFile != null && !fotoFile.isEmpty()) {
-                    // Buscamos la imagen en el classpath (igual que en selección de avatar)
                     java.net.URL url = getClass().getClassLoader().getResource(fotoFile);
                     if (url == null) url = getClass().getClassLoader().getResource("Imagenes/" + fotoFile);
                     
                     if (url != null) {
                         iconoUsuario = new ImageIcon(url);
-                        // Escalamos un poco la imagen para que no sea gigante
                         Image img = iconoUsuario.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
                         iconoUsuario = new ImageIcon(img);
                     }
                 }
 
-                // 3. Guardamos sesión y abrimos la ventana principal
                 UserSession.set(nombre, iconoUsuario);
-                new MainGuiWindow(nombre, iconoUsuario).setVisible(true);
                 
-                dispose(); // Cerramos la ventana de login
+                // --- CORRECCIÓN AQUÍ: Volvemos al constructor (String, ImageIcon) ---
+                new MainGuiWindow(nombre, iconoUsuario).setVisible(true);
+                // --------------------------------------------------------------------
+                
+                dispose(); 
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -139,17 +138,15 @@ public class VentanaInicioSesion extends JFrame {
         panelForm.add(contraseñaLabel, gbc);
         gbc.gridy = 3;
         panelForm.add(contraseñaUsuario, gbc);
-        // CAPTCHA Label
+        
         gbc.gridy = 4;
         gbc.insets = new Insets(20, 10, 5, 10);
         panelForm.add(captchaLabel, gbc);
         
-        // CAPTCHA Panel (con toda la funcionalidad de bloqueo)
         gbc.gridy = 5;
         gbc.insets = new Insets(5, 10, 10, 10);
         panelForm.add(panelCaptcha, gbc);
         
-        // Botón iniciar
         gbc.gridy = 6;
         gbc.insets = new Insets(20, 10, 10, 10);
         panelForm.add(btnIniciar, gbc);

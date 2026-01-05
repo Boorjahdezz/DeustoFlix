@@ -4,13 +4,7 @@ import domain.*;
 import databases.ConexionBD;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -18,15 +12,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.awt.GridLayout;
-import java.awt.Cursor; // Importante para el cursor de mano
+import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class MainGuiWindow extends JFrame {
 
+    private static final long serialVersionUID = 1L;
     private JPanel contentPanel;
     private MediaRepository repo;
     private final String usuario;
-    // userLabel global para poder actualizar el icono al cambiar foto
     private JLabel userLabel; 
     private final ImageIcon avatar;
 
@@ -40,21 +35,24 @@ public class MainGuiWindow extends JFrame {
 
     public MainGuiWindow(String usuario, ImageIcon avatar) {
         this.usuario = usuario;
-        this.avatar = avatar; // Guardamos el avatar inicial
+        this.avatar = avatar;
 
         setTitle("DeustoFlix");
-        setSize(1200, 800);
-        setLocationRelativeTo(null);
+        
+        // --- TAMAÑO GRANDE ---
+        setSize(1600, 1100); 
+        setLocationRelativeTo(null); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         repo = new MediaRepository();
 
-        // --- BARRA SUPERIOR ---
+        // --- BARRA SUPERIOR (NAVBAR) ---
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(20, 20, 20));
+        topBar.setPreferredSize(new Dimension(getWidth(), 60));
 
-        Dimension tamañoBoton = new Dimension(130, 35);
+        Dimension tamañoBoton = new Dimension(160, 40);
         JButton btnInicio = new JButton("Inicio");
         JButton btnPeliculas = new JButton("Películas");
         JButton btnSeries = new JButton("Series");
@@ -78,12 +76,11 @@ public class MainGuiWindow extends JFrame {
         
         userLabel = new JLabel(usuario);
         userLabel.setForeground(Color.WHITE);
-        userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        userLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
 
-        // Si hay avatar inicial, lo ponemos
         if (avatar != null) {
-            userLabel.setIcon(escalarIcono(avatar, 36, 36));
+            userLabel.setIcon(escalarIcono(avatar, 40, 40));
             userLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         }
 
@@ -104,15 +101,12 @@ public class MainGuiWindow extends JFrame {
         JMenuItem itemEliminar = new JMenuItem("Eliminar cuenta");
         estilizarItemMenu(itemEliminar);
 
-        // Acciones
         itemEditar.addActionListener(e -> logicaEditarDatos());
         itemFoto.addActionListener(e -> logicaCambiarFoto()); 
-        
         itemCerrar.addActionListener(e -> {
             new VentanaInicio().setVisible(true);
             dispose();
         });
-        
         itemEliminar.addActionListener(e -> logicaEliminarCuenta());
 
         userMenu.add(itemEditar);
@@ -150,7 +144,7 @@ public class MainGuiWindow extends JFrame {
         JButton[] todosLosBotones = {btnInicio, btnPeliculas, btnSeries, btnRanking};
 
         btnInicio.addActionListener(e -> {
-            mostrarInicio();
+            mostrarInicio(null);
             actualizarSeleccionBoton(btnInicio, todosLosBotones);
         });
         btnPeliculas.addActionListener(e -> {
@@ -166,124 +160,150 @@ public class MainGuiWindow extends JFrame {
             actualizarSeleccionBoton(btnRanking, todosLosBotones);
         });
 
-        mostrarInicio();
+        // Carga inicial
+        mostrarInicio(null);
+        
         actualizarSeleccionBoton(btnInicio, todosLosBotones);
     }
 
     // ================================================================
-    // NUEVA LÓGICA: CAMBIAR FOTO DE PERFIL (CORREGIDA)
+    //  INICIO CON BUSCADOR + RECOMENDACIONES
     // ================================================================
-    private void logicaCambiarFoto() {
-        JDialog dialog = new JDialog(this, "Elige un nuevo avatar", true);
-        dialog.setSize(500, 200); // Un poco más ancha para que quepan bien
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout());
+    private void mostrarInicio(String terminoBusqueda) {
+        contentPanel.removeAll();
         
-        JPanel panelAvatares = new JPanel(new GridLayout(1, 4, 10, 10));
-        panelAvatares.setBackground(new Color(30, 30, 30));
-        panelAvatares.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Panel del Buscador
+        JPanel searchContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        searchContainer.setBackground(Color.BLACK);
+        searchContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80)); 
 
-        // TUS NOMBRES REALES DE ARCHIVO (según tu carpeta resources)
-        String[] opciones = {"perfil1.png", "perfil2.png", "perfil3.png", "perfil4.png"};
+        JLabel lblIcon = new JLabel("🔍");
+        lblIcon.setForeground(Color.GRAY);
+        lblIcon.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        
+        JTextField txtBuscar = new JTextField(50); 
+        txtBuscar.setPreferredSize(new Dimension(600, 40)); 
+        txtBuscar.setBackground(new Color(50, 50, 50));
+        txtBuscar.setForeground(Color.WHITE);
+        txtBuscar.setCaretColor(Color.WHITE);
+        txtBuscar.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        txtBuscar.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(80,80,80)), 
+            BorderFactory.createEmptyBorder(5, 10, 5, 10))
+        );
+        
+        if (terminoBusqueda != null) {
+            txtBuscar.setText(terminoBusqueda);
+        }
 
-        for (String nombreArchivo : opciones) {
-            // Cargar imagen: Buscamos en la carpeta 'resources'
-            ImageIcon icon = null;
-            
-            // Intento 1: Carga directa desde classpath (si resources es source folder)
-            java.net.URL url = getClass().getClassLoader().getResource("resources/" + nombreArchivo);
-            
-            // Intento 2: Carga fallback por si 'resources' está en la raíz pero no es source folder
-            if (url == null) {
-                try {
-                     url = new java.io.File("src/resources/" + nombreArchivo).toURI().toURL();
-                } catch (Exception ex) { }
-            }
+        JButton btnBuscar = new JButton("BUSCAR");
+        estilizarBotonPequeño(btnBuscar);
+        btnBuscar.setPreferredSize(new Dimension(120, 40));
 
-            if (url != null) {
-                icon = new ImageIcon(url);
-                Image img = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-                icon = new ImageIcon(img);
-            } else {
-                System.err.println("No se pudo cargar: " + nombreArchivo);
+        btnBuscar.addActionListener(e -> mostrarInicio(txtBuscar.getText().trim()));
+        txtBuscar.addActionListener(e -> mostrarInicio(txtBuscar.getText().trim()));
+
+        searchContainer.add(lblIcon);
+        searchContainer.add(txtBuscar);
+        searchContainer.add(btnBuscar);
+
+        contentPanel.add(searchContainer);
+
+
+        // --- LÓGICA DE CONTENIDO ---
+        if (terminoBusqueda == null || terminoBusqueda.isEmpty()) {
+            // MOSTRAR TODO (POR CATEGORÍAS)
+            ArrayList<MediaItem> lista = repo.getAll();
+            Map<String, ArrayList<MediaItem>> cats = repo.agruparPorCategoria(lista);
+
+            for (String cat : cats.keySet()) {
+                JLabel lbl = crearTitulo(cat);
+                contentPanel.add(lbl);
+                contentPanel.add(new MediaPanelFilas(cats.get(cat)));
             }
+        } else {
+            // MOSTRAR RESULTADOS DE BÚSQUEDA
+            ArrayList<MediaItem> resultados = repo.buscarPorTitulo(terminoBusqueda);
             
-            JButton btnAvatar = new JButton();
-            btnAvatar.setBackground(new Color(50, 50, 50));
-            btnAvatar.setFocusPainted(false);
+            JLabel lblResultados = crearTitulo("Resultados para: \"" + terminoBusqueda + "\"");
+            lblResultados.setForeground(new Color(255, 0, 0));
+            contentPanel.add(lblResultados);
             
-            if (icon != null) {
-                btnAvatar.setIcon(icon);
-            } else {
-                btnAvatar.setText("?"); 
-                btnAvatar.setForeground(Color.WHITE);
-            }
-            
-            // Acción al hacer clic
-            final ImageIcon iconoFinal = icon;
-            btnAvatar.addActionListener(e -> {
-                boolean exito = ConexionBD.actualizarFotoUsuario(this.usuario, nombreArchivo);
-                if (exito) {
-                    if (iconoFinal != null) {
-                        Image imgPeque = iconoFinal.getImage().getScaledInstance(36, 36, Image.SCALE_SMOOTH);
-                        userLabel.setIcon(new ImageIcon(imgPeque));
-                        userLabel.revalidate(); // Asegurar que se repinte
-                        userLabel.repaint();
-                    }
-                    JOptionPane.showMessageDialog(dialog, "Foto de perfil actualizada.");
-                    dialog.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(dialog, "Error al guardar en base de datos.");
+
+            if (!resultados.isEmpty()) {
+                MediaPanelFilas panelResultados = new MediaPanelFilas(resultados);
+                contentPanel.add(panelResultados);
+                
+                // --- NUEVO: RECOMENDACIONES BASADAS EN LA BÚSQUEDA ---
+                List<MediaItem> recomendados = obtenerRecomendaciones(resultados);
+                
+                if (!recomendados.isEmpty()) {
+                    // Separador visual o espacio
+                    contentPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+                    
+                    JLabel lblRecomendados = crearTitulo("Porque buscaste esto (Recomendados):");
+                    lblRecomendados.setForeground(new Color(255, 0, 0)); // Un poco más gris para diferenciar
+                    contentPanel.add(lblRecomendados);
+                    contentPanel.add(new MediaPanelFilas(recomendados));
                 }
-            });
-            
-            panelAvatares.add(btnAvatar);
-        }
+                // -----------------------------------------------------
 
-        dialog.add(panelAvatares, BorderLayout.CENTER);
-        dialog.setVisible(true);
+            } else {
+                JLabel lblVacio = new JLabel("No se encontraron coincidencias.");
+                lblVacio.setForeground(Color.GRAY);
+                lblVacio.setFont(new Font("SansSerif", Font.ITALIC, 18));
+                lblVacio.setAlignmentX(Component.CENTER_ALIGNMENT);
+                lblVacio.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+                contentPanel.add(lblVacio);
+            }
+        }
+        
+        refrescar();
+    }
+    
+    /**
+     * Método inteligente que busca películas del mismo género que los resultados encontrados.
+     */
+    private List<MediaItem> obtenerRecomendaciones(List<MediaItem> resultadosBusqueda) {
+        List<MediaItem> recomendados = new ArrayList<>();
+        List<MediaItem> todoElCatalogo = repo.getAll();
+        
+        // 1. Identificar qué géneros hemos encontrado
+        Set<Genero> generosEncontrados = new HashSet<>();
+        for (MediaItem item : resultadosBusqueda) {
+            if (item.getGenero() != null) {
+                generosEncontrados.add(item.getGenero());
+            }
+        }
+        
+        // 2. Buscar en el catálogo cosas que coincidan con esos géneros
+        for (MediaItem item : todoElCatalogo) {
+            // Si el género coincide Y NO está ya en la lista de resultados (para no repetir)
+            if (generosEncontrados.contains(item.getGenero()) && !resultadosBusqueda.contains(item)) {
+                recomendados.add(item);
+            }
+        }
+        
+        // 3. Mezclar para variedad y limitar a 15
+        Collections.shuffle(recomendados);
+        if (recomendados.size() > 15) {
+            return recomendados.subList(0, 15);
+        }
+        
+        return recomendados;
     }
 
+
     // ================================================================
-    // RESTO DE MÉTODOS
+    //  RESTO DEL CÓDIGO (SIN CAMBIOS)
     // ================================================================
 
-    private void actualizarSeleccionBoton(JButton activo, JButton[] todos) {
-        for (JButton btn : todos) {
-            if (btn == activo) btn.setBackground(COLOR_ACTIVO);
-            else btn.setBackground(COLOR_NORMAL);
-        }
-    }
-
-    private void estilizarBoton(JButton b, Dimension d) {
-        b.setPreferredSize(d);
-        b.setBackground(COLOR_NORMAL);
+    private void estilizarBotonPequeño(JButton b) {
+        b.setBackground(new Color(229, 9, 20));
         b.setForeground(Color.WHITE);
         b.setFocusPainted(false);
-        b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-    }
-
-    private JLabel crearTitulo(String txt) {
-        JLabel lbl = new JLabel(txt);
-        lbl.setForeground(Color.WHITE);
-        lbl.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lbl.setHorizontalAlignment(SwingConstants.CENTER);
-        lbl.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0)); 
-        return lbl;
-    }
-
-    private void mostrarInicio() {
-        contentPanel.removeAll();
-        ArrayList<MediaItem> lista = repo.getAll();
-        Map<String, ArrayList<MediaItem>> cats = repo.agruparPorCategoria(lista);
-
-        for (String cat : cats.keySet()) {
-            JLabel lbl = crearTitulo(cat);
-            contentPanel.add(lbl);
-            contentPanel.add(new MediaPanelFilas(cats.get(cat)));
-        }
-        refrescar();
+        b.setFont(new Font("SansSerif", Font.BOLD, 14));
+        b.setBorder(BorderFactory.createEmptyBorder());
     }
 
     private void mostrarSeries() {
@@ -336,7 +356,6 @@ public class MainGuiWindow extends JFrame {
         refrescar();
     }
 
-    // --- RANKING (CON ESTILO OSCURO) ---
     private void mostrarRanking() {
         contentPanel.removeAll();
         JPanel panel = new JPanel(new BorderLayout());
@@ -363,7 +382,7 @@ public class MainGuiWindow extends JFrame {
         tabla.setFillsViewportHeight(true);
         tabla.setDefaultRenderer(Object.class, new RankingCellRenderer());
 
-        tabla.getTableHeader().setBackground(new Color(45, 45, 45));
+        tabla.getTableHeader().setBackground(new Color(229, 9, 20));
         tabla.getTableHeader().setForeground(Color.WHITE);
         tabla.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
         tabla.getTableHeader().setPreferredSize(new Dimension(0, 40));
@@ -396,6 +415,94 @@ public class MainGuiWindow extends JFrame {
         }
         if(lista.size() > 25) lista = lista.subList(0, 25);
         modelo.setDatos(lista);
+    }
+
+    private void logicaCambiarFoto() {
+        JDialog dialog = new JDialog(this, "Elige un nuevo avatar", true);
+        dialog.setSize(500, 200); 
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+        
+        JPanel panelAvatares = new JPanel(new GridLayout(1, 4, 10, 10));
+        panelAvatares.setBackground(new Color(30, 30, 30));
+        panelAvatares.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        String[] opciones = {"perfil1.png", "perfil2.png", "perfil3.png", "perfil4.png"};
+
+        for (String nombreArchivo : opciones) {
+            ImageIcon icon = null;
+            java.net.URL url = getClass().getClassLoader().getResource("resources/" + nombreArchivo);
+            
+            if (url == null) {
+                try {
+                     url = new java.io.File("src/resources/" + nombreArchivo).toURI().toURL();
+                } catch (Exception ex) { }
+            }
+
+            if (url != null) {
+                icon = new ImageIcon(url);
+                Image img = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(img);
+            }
+            
+            JButton btnAvatar = new JButton();
+            btnAvatar.setBackground(new Color(50, 50, 50));
+            btnAvatar.setFocusPainted(false);
+            
+            if (icon != null) {
+                btnAvatar.setIcon(icon);
+            } else {
+                btnAvatar.setText("?"); 
+                btnAvatar.setForeground(Color.WHITE);
+            }
+            
+            final ImageIcon iconoFinal = icon;
+            btnAvatar.addActionListener(e -> {
+                boolean exito = ConexionBD.actualizarFotoUsuario(this.usuario, nombreArchivo);
+                if (exito) {
+                    if (iconoFinal != null) {
+                        Image imgPeque = iconoFinal.getImage().getScaledInstance(36, 36, Image.SCALE_SMOOTH);
+                        userLabel.setIcon(new ImageIcon(imgPeque));
+                        userLabel.revalidate(); 
+                        userLabel.repaint();
+                    }
+                    JOptionPane.showMessageDialog(dialog, "Foto de perfil actualizada.");
+                    dialog.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(dialog, "Error al guardar en base de datos.");
+                }
+            });
+            
+            panelAvatares.add(btnAvatar);
+        }
+        dialog.add(panelAvatares, BorderLayout.CENTER);
+        dialog.setVisible(true);
+    }
+
+    private void actualizarSeleccionBoton(JButton activo, JButton[] todos) {
+        for (JButton btn : todos) {
+            if (btn == activo) btn.setBackground(COLOR_ACTIVO);
+            else btn.setBackground(COLOR_NORMAL);
+        }
+    }
+
+    private void estilizarBoton(JButton b, Dimension d) {
+        b.setPreferredSize(d);
+        b.setBackground(COLOR_NORMAL);
+        b.setForeground(Color.WHITE);
+        b.setFocusPainted(false);
+        b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private JLabel crearTitulo(String txt) {
+        JLabel lbl = new JLabel(txt);
+        lbl.setForeground(Color.WHITE);
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 18));
+        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lbl.setHorizontalAlignment(SwingConstants.LEFT); 
+        lbl.setBorder(BorderFactory.createEmptyBorder(20, 40, 5, 0)); 
+        lbl.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        return lbl;
     }
 
     private void refrescar() {

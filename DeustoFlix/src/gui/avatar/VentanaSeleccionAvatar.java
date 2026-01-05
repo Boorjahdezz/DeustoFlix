@@ -38,7 +38,6 @@ public class VentanaSeleccionAvatar extends JFrame {
         grid.setBackground(new Color(20, 20, 20));
         grid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
- 
         String[] nombresArchivos = {
                 "perfil1.png", "perfil2.png", "perfil3.png", "perfil4.png",
                 "perfil5.png", "perfil6.png", "perfil7.png", "perfil8.png"
@@ -59,7 +58,8 @@ public class VentanaSeleccionAvatar extends JFrame {
                 continue; 
             }
 
-            final ImageIcon iconFinal = icon;
+            // CORRECCIÓN: Descomentamos esta línea porque la necesitamos
+            final ImageIcon iconFinal = icon; 
 
             JButton b = new JButton(escalarIcono(icon, 120, 120));
             b.setBackground(new Color(35, 35, 35));
@@ -73,8 +73,10 @@ public class VentanaSeleccionAvatar extends JFrame {
                 if (exito) {
                     JOptionPane.showMessageDialog(this, "¡Bienvenido a DeustoFlix, " + nombreTemp + "!");
                     
-                
+                    // --- CORRECCIÓN AQUÍ: Pasamos nombre e icono ---
                     new MainGuiWindow(nombreTemp, iconFinal).setVisible(true);
+                    // -----------------------------------------------
+                    
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Error: El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -86,19 +88,17 @@ public class VentanaSeleccionAvatar extends JFrame {
 
         add(grid, BorderLayout.CENTER);
 
-    
         JPanel panelSur = new JPanel();
         panelSur.setBackground(new Color(25, 25, 25));
         panelSur.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         JButton btnExit = new JButton("Cancelar y Volver al Login");
         btnExit.setFont(new Font("SansSerif", Font.BOLD, 14));
-        btnExit.setBackground(new Color(180, 50, 50)); // Rojo oscuro
+        btnExit.setBackground(new Color(180, 50, 50)); 
         btnExit.setForeground(Color.WHITE);
         btnExit.setFocusPainted(false);
         btnExit.setPreferredSize(new Dimension(250, 40));
         
-
         btnExit.addActionListener(e -> {
             new VentanaInicioSesion().setVisible(true);
             dispose();
