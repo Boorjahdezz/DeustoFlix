@@ -9,5 +9,6 @@
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.36.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.45.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/borja.hernandez/OneDrive - Universidad de Deusto/Documentos/slf4j-simple-1.7.36.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
