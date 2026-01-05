@@ -3,12 +3,18 @@ package gui;
 import java.awt.*;
 import javax.swing.*;
 
-// IMPORTANTE: Importamos la ventana del siguiente paso
-import gui.avatar.VentanaSeleccionAvatar; 
+
+import gui.avatar.VentanaSeleccionAvatar;
+import gui.CaptchaVerificationPanel;
 
 public class VentanaCrearUsuario extends JFrame {
 
-    public VentanaCrearUsuario() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private CaptchaVerificationPanel panelCaptcha;
+	public VentanaCrearUsuario() {
         setSize(1200, 800);
         setTitle("Crear Usuario - Paso 1");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +53,12 @@ public class VentanaCrearUsuario extends JFrame {
 
         JLabel gmailUsuarioLabel = new JLabel("Gmail");
         estilarLabel(gmailUsuarioLabel);
+        
+        JLabel captchaLabel = new JLabel("Verificación CAPTCHA");
+        captchaLabel.setForeground(Color.WHITE);
+        captchaLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        CaptchaVerificationPanel panelCaptcha = new CaptchaVerificationPanel();
 
         // BOTÓN SIGUIENTE
         JButton btnSiguiente = new JButton("Siguiente");
@@ -63,8 +75,31 @@ public class VentanaCrearUsuario extends JFrame {
                 JOptionPane.showMessageDialog(this, "Por favor, rellena todos los campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
-            // AQUÍ ESTÁ EL CAMBIO:
+            if (panelCaptcha.isBloqueado()) {
+                JOptionPane.showMessageDialog(this, 
+                    "Demasiados intentos fallidos. Por favor espere.", 
+                    "Bloqueado", 
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!panelCaptcha.verificarCaptcha()) {
+                int intentosRestantes = panelCaptcha.getIntentosRestantes();
+                
+                if (panelCaptcha.isBloqueado()) {
+                    // Se alcanzó el límite de intentos, el componente se bloqueó automáticamente
+                    JOptionPane.showMessageDialog(this, 
+                        "Has alcanzado el número máximo de intentos. Espera para continuar.", 
+                        "Bloqueado", 
+                        JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // Aún quedan intentos
+                    JOptionPane.showMessageDialog(this, 
+                        "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, 
+                        "Error CAPTCHA", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
+                return;
+            }
             // No guardamos todavía. Abrimos la selección de avatar pasando los datos.
             new VentanaSeleccionAvatar(nombre, gmail, pass).setVisible(true);
             dispose(); // Cerramos esta ventana
@@ -85,7 +120,9 @@ public class VentanaCrearUsuario extends JFrame {
         gbc.gridy = 3; panelForm.add(contraseñaUsuario, gbc);
         gbc.gridy = 4; panelForm.add(gmailUsuarioLabel, gbc);
         gbc.gridy = 5; panelForm.add(gmailUsuario, gbc);
-        gbc.gridy = 6; panelForm.add(btnSiguiente, gbc);
+        gbc.gridy = 6; panelForm.add(captchaLabel, gbc);
+        gbc.gridy = 7; panelForm.add(panelCaptcha, gbc);
+        gbc.gridy = 8; panelForm.add(btnSiguiente, gbc);
 
         add(panelForm, BorderLayout.CENTER);
     }

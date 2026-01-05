@@ -5,7 +5,6 @@ import javax.swing.*;
 
 import databases.ConexionBD;
 import gui.avatar.UserSession;
-import gui.CaptchaVerificationPanel;
 
 public class VentanaInicioSesion extends JFrame {
 
