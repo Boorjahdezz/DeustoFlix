@@ -4,11 +4,13 @@ import java.awt.*;
 import javax.swing.*;
 
 import databases.ConexionBD;
-import gui.avatar.UserSession; // Asegúrate de importar esto
+import gui.avatar.UserSession;
+import gui.CaptchaVerificationPanel;
 
 public class VentanaInicioSesion extends JFrame {
 
     private static final long serialVersionUID = 1L;
+    private CaptchaVerificationPanel panelCaptcha;
 
     public VentanaInicioSesion() {
         setSize(1200, 800);
@@ -37,6 +39,12 @@ public class VentanaInicioSesion extends JFrame {
         JLabel contraseñaLabel = new JLabel("Contraseña");
         contraseñaLabel.setForeground(Color.WHITE);
         contraseñaLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        JLabel captchaLabel = new JLabel("Verificación CAPTCHA");
+        captchaLabel.setForeground(Color.WHITE);
+        captchaLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        CaptchaVerificationPanel panelCaptcha = new CaptchaVerificationPanel();
 
         JButton btnIniciar = new JButton("Iniciar Sesion");
         btnIniciar.setPreferredSize(new Dimension(200, 40));
@@ -46,7 +54,39 @@ public class VentanaInicioSesion extends JFrame {
         btnIniciar.addActionListener(e -> {
             String nombre = nombreUsuario.getText();
             String pass = new String(contraseñaUsuario.getPassword());
-
+            
+            if (nombre.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "Por favor complete todos los campos", 
+                    "Campos incompletos", 
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (panelCaptcha.isBloqueado()) {
+                JOptionPane.showMessageDialog(this, 
+                    "Demasiados intentos fallidos. Por favor espere.", 
+                    "Bloqueado", 
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!panelCaptcha.verificarCaptcha()) {
+                int intentosRestantes = panelCaptcha.getIntentosRestantes();
+                
+                if (panelCaptcha.isBloqueado()) {
+                    // Se alcanzó el límite de intentos, el componente se bloqueó automáticamente
+                    JOptionPane.showMessageDialog(this, 
+                        "Has alcanzado el número máximo de intentos. Espera para continuar.", 
+                        "Bloqueado", 
+                        JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // Aún quedan intentos
+                    JOptionPane.showMessageDialog(this, 
+                        "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, 
+                        "Error CAPTCHA", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
+                return;
+            }
             if (ConexionBD.loginUsuario(nombre, pass)) {
                 // 1. Recuperamos el nombre del archivo de la foto
                 String fotoFile = ConexionBD.obtenerFotoUsuario(nombre);
@@ -100,9 +140,20 @@ public class VentanaInicioSesion extends JFrame {
         panelForm.add(contraseñaLabel, gbc);
         gbc.gridy = 3;
         panelForm.add(contraseñaUsuario, gbc);
+        // CAPTCHA Label
         gbc.gridy = 4;
+        gbc.insets = new Insets(20, 10, 5, 10);
+        panelForm.add(captchaLabel, gbc);
+        
+        // CAPTCHA Panel (con toda la funcionalidad de bloqueo)
+        gbc.gridy = 5;
+        gbc.insets = new Insets(5, 10, 10, 10);
+        panelForm.add(panelCaptcha, gbc);
+        
+        // Botón iniciar
+        gbc.gridy = 6;
+        gbc.insets = new Insets(20, 10, 10, 10);
         panelForm.add(btnIniciar, gbc);
-
         add(panelForm, BorderLayout.CENTER);
 
         JPanel panelExit = new JPanel(new FlowLayout(FlowLayout.LEFT));
