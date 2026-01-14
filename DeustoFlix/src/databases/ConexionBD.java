@@ -261,4 +261,119 @@ public class ConexionBD {
             System.err.println("Error cargando CSV Series: " + e.getMessage()); 
         }
     }
+
+    /**
+     * Obtiene todo el contenido 
+     */
+    public static ArrayList<String[]> obtenerTodosUsuarios() {
+        ArrayList<String[]> usuarios = new ArrayList<>();
+        String sql = "SELECT id, nombre, gmail, foto FROM usuarios ORDER BY nombre";
+        
+        try (Connection con = getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                String[] usuario = new String[4];
+                usuario[0] = String.valueOf(rs.getInt("id"));
+                usuario[1] = rs.getString("nombre");
+                usuario[2] = rs.getString("gmail");
+                usuario[3] = rs.getString("foto");
+                usuarios.add(usuario);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener usuarios: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return usuarios;
+    }
+
+    /**
+     * Borra el contenido mediante el id
+     */
+    public static boolean eliminarContenido(int id) {
+        String sql = "DELETE FROM contenido WHERE id = ?";
+        
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            
+            pst.setInt(1, id);
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar contenido: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza el contenido 
+     */
+    public static boolean actualizarContenido(int id, String titulo, String tipo, 
+                                             String genero, String categoria, 
+                                             String descripcion, int duracion, 
+                                             double valoracion) {
+        String sql = "UPDATE contenido SET titulo = ?, tipo = ?, genero = ?, " +
+                     "categoria = ?, descripcion = ?, duracion = ?, valoracion = ? " +
+                     "WHERE id = ?";
+        
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            
+            pst.setString(1, titulo);
+            pst.setString(2, tipo);
+            pst.setString(3, genero);
+            pst.setString(4, categoria);
+            pst.setString(5, descripcion);
+            pst.setInt(6, duracion);
+            pst.setDouble(7, valoracion);
+            pst.setInt(8, id);
+            
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar contenido: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Obtener el todo el contenido con el id (for admin management)
+     */
+    public static ArrayList<String[]> obtenerTodoContenidoConID() {
+        ArrayList<String[]> contenidos = new ArrayList<>();
+        String sql = "SELECT id, titulo, tipo, genero, categoria, duracion, valoracion FROM contenido ORDER BY titulo";
+        
+        try (Connection con = getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                String[] contenido = new String[7];
+                contenido[0] = String.valueOf(rs.getInt("id"));
+                contenido[1] = rs.getString("titulo");
+                contenido[2] = rs.getString("tipo");
+                contenido[3] = rs.getString("genero");
+                contenido[4] = rs.getString("categoria");
+                contenido[5] = String.valueOf(rs.getInt("duracion"));
+                contenido[6] = String.format("%.1f", rs.getDouble("valoracion"));
+                contenidos.add(contenido);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener contenido: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return contenidos;
+    }
+
+    /**
+     * Verifica si el usuario es administrador
+     */
+    public static boolean esAdmin(String nombre, String contrasenya) {
+        return "admin".equals(nombre) && "admin".equals(contrasenya);
+    }
 }
