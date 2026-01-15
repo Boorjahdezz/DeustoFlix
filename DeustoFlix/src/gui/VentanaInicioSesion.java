@@ -86,10 +86,10 @@ public class VentanaInicioSesion extends JFrame {
             }
             
             if (ConexionBD.loginUsuario(nombre, pass)) {
-                // 1. Recuperamos el nombre del archivo de la foto
+
                 String fotoFile = ConexionBD.obtenerFotoUsuario(nombre);
                 
-                // 2. Cargamos la imagen desde los recursos
+        
                 ImageIcon iconoUsuario = null;
                 if (fotoFile != null && !fotoFile.isEmpty()) {
                     java.net.URL url = getClass().getClassLoader().getResource(fotoFile);

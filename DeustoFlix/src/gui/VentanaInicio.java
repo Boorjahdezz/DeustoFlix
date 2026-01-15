@@ -16,7 +16,7 @@ public class VentanaInicio extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel principal con gradiente
+  
         JPanel panelPrincipal = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -24,7 +24,7 @@ public class VentanaInicio extends JFrame {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                 
-                // Gradiente de fondo oscuro moderno
+              
                 GradientPaint gradient = new GradientPaint(
                     0, 0, new Color(10, 10, 15),
                     0, getHeight(), new Color(25, 25, 35)
@@ -107,7 +107,7 @@ public class VentanaInicio extends JFrame {
         btnAdmin.setToolTipText("Admin Access");
         btnAdmin.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Hover effect
+    
         btnAdmin.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -122,7 +122,7 @@ public class VentanaInicio extends JFrame {
         
         btnAdmin.addActionListener(e -> mostrarLoginAdmin());
         
-        // Position admin button on the right
+      
         JPanel footerContent = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footerContent.setOpaque(false);
         footerContent.add(lblFooter);
@@ -135,17 +135,13 @@ public class VentanaInicio extends JFrame {
         panelFooter.add(footerContent, BorderLayout.CENTER);
         panelFooter.add(adminButtonPanel, BorderLayout.EAST);
 
-        // Añadir paneles al frame
         panelPrincipal.add(panelHeader, BorderLayout.NORTH);
         panelPrincipal.add(panelCentro, BorderLayout.CENTER);
         panelPrincipal.add(panelFooter, BorderLayout.SOUTH);
 
         add(panelPrincipal);
     }
-
-    /**
-     * Show admin login dialog
-     */
+    
     private void mostrarLoginAdmin() {
         JDialog loginDialog = new JDialog(this, "Admin Access", true);
         loginDialog.setSize(400, 250);
@@ -160,7 +156,7 @@ public class VentanaInicio extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Title
+       
         JLabel lblTitle = new JLabel("🔐 Administrator Login");
         lblTitle.setFont(new Font("Arial", Font.BOLD, 18));
         lblTitle.setForeground(new Color(229, 9, 20));
@@ -169,7 +165,7 @@ public class VentanaInicio extends JFrame {
         gbc.gridwidth = 2;
         panel.add(lblTitle, gbc);
         
-        // Username
+        
         JLabel lblUser = new JLabel("Username:");
         lblUser.setForeground(Color.WHITE);
         lblUser.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -191,7 +187,7 @@ public class VentanaInicio extends JFrame {
         gbc.gridy = 1;
         panel.add(txtUser, gbc);
         
-        // Password
+    
         JLabel lblPass = new JLabel("Password:");
         lblPass.setForeground(Color.WHITE);
         lblPass.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -212,7 +208,7 @@ public class VentanaInicio extends JFrame {
         gbc.gridy = 2;
         panel.add(txtPass, gbc);
         
-        // Login button
+    
         JButton btnLogin = new JButton("ACCESS");
         btnLogin.setBackground(new Color(229, 9, 20));
         btnLogin.setForeground(Color.WHITE);
@@ -243,33 +239,31 @@ public class VentanaInicio extends JFrame {
             }
         });
         
-        // Enter key support
+    
         txtPass.addActionListener(e -> btnLogin.doClick());
         
         loginDialog.add(panel, BorderLayout.CENTER);
         loginDialog.setVisible(true);
     }
 
-    /**
-     * Crea un botón con estilo moderno y efectos hover
-     */
+
     private JButton crearBotonModerno(String texto, Color colorBase, boolean isPrimario) {
         JButton boton = new JButton(texto) {
             private Color colorActual = colorBase;
             private Color colorHover = isPrimario ? 
-                new Color(200, 8, 18) : // Rojo más oscuro para hover
-                new Color(70, 70, 70);  // Gris más claro para hover
+                new Color(200, 8, 18) : 
+                new Color(70, 70, 70);  
 
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                // Dibujar fondo redondeado
+                
                 g2d.setColor(colorActual);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 
-                // Dibujar texto
+                
                 g2d.setColor(getForeground());
                 FontMetrics fm = g2d.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(getText())) / 2;
@@ -278,7 +272,7 @@ public class VentanaInicio extends JFrame {
             }
 
             {
-                // Efectos hover
+                
                 addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
                     public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -313,10 +307,10 @@ public class VentanaInicio extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Inicializamos la base de datos
+       
         ConexionBD.inicializarBD();
         
-        // Look and Feel moderno
+       
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {

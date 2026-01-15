@@ -126,20 +126,16 @@ public class CaptchaVerificationPanel extends JPanel {
         }
 
         if (captchaUsuario.equals(captchaCorrecto)) {
-            // CAPTCHA correcto - resetear intentos
             intentosFallidos = 0;
             campoCaptcha.setText("");
             return true;
         } else {
-            // CAPTCHA incorrecto
             intentosFallidos++;
             campoCaptcha.setText("");
             
             if (intentosFallidos >= 3) {
-                // Bloquear después de 3 intentos fallidos
                 iniciarBloqueo(10); // 10 segundos de bloqueo
             } else {
-                // Regenerar CAPTCHA
                 generarCaptcha();
             }
             

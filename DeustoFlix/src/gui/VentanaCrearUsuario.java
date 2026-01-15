@@ -70,7 +70,7 @@ public class VentanaCrearUsuario extends JFrame {
             String gmail = gmailUsuario.getText();
             String pass = new String(contraseñaUsuario.getPassword());
 
-            // Validación simple antes de pasar al siguiente paso
+          
             if(nombre.isEmpty() || gmail.isEmpty() || pass.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Por favor, rellena todos los campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -86,13 +86,13 @@ public class VentanaCrearUsuario extends JFrame {
                 int intentosRestantes = panelCaptcha.getIntentosRestantes();
                 
                 if (panelCaptcha.isBloqueado()) {
-                    // Se alcanzó el límite de intentos, el componente se bloqueó automáticamente
+                   
                     JOptionPane.showMessageDialog(this, 
                         "Has alcanzado el número máximo de intentos. Espera para continuar.", 
                         "Bloqueado", 
                         JOptionPane.ERROR_MESSAGE);
                 } else {
-                    // Aún quedan intentos
+                   
                     JOptionPane.showMessageDialog(this, 
                         "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, 
                         "Error CAPTCHA", 
@@ -100,9 +100,9 @@ public class VentanaCrearUsuario extends JFrame {
                 }
                 return;
             }
-            // No guardamos todavía. Abrimos la selección de avatar pasando los datos.
+      
             new VentanaSeleccionAvatar(nombre, gmail, pass).setVisible(true);
-            dispose(); // Cerramos esta ventana
+            dispose(); 
         });
 
         // Layout

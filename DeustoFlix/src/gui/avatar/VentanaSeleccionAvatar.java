@@ -13,11 +13,10 @@ public class VentanaSeleccionAvatar extends JFrame {
     private String gmailTemp;
     private String passTemp;
     
-    // Variables para el modo edición
     private boolean modoEdicion = false;
     private MainGuiWindow ventanaPrincipalRef;
 
-    // CONSTRUCTOR 1: MODO REGISTRO (Para cuando creas cuenta nueva)
+    
     public VentanaSeleccionAvatar(String nombre, String gmail, String pass) {
         this.nombreTemp = nombre;
         this.gmailTemp = gmail;
@@ -26,7 +25,7 @@ public class VentanaSeleccionAvatar extends JFrame {
         inicializarComponentes();
     }
 
-    // CONSTRUCTOR 2: MODO EDICIÓN (Nuevo, para cambiar foto desde Main)
+    
     public VentanaSeleccionAvatar(MainGuiWindow ventanaPrincipal) {
         this.modoEdicion = true;
         this.ventanaPrincipalRef = ventanaPrincipal;
@@ -37,11 +36,11 @@ public class VentanaSeleccionAvatar extends JFrame {
         setTitle(modoEdicion ? "Cambiar Avatar" : "Paso 2: Elige tu avatar");
         setSize(800, 550); 
         setLocationRelativeTo(null);
-        // Si es edición, solo cerramos esta ventana (DISPOSE), si es registro cerramos app (EXIT)
+        
         setDefaultCloseOperation(modoEdicion ? JFrame.DISPOSE_ON_CLOSE : JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // --- TÍTULO ---
+        
         String textoTitulo = modoEdicion ? "Selecciona tu nuevo icono de perfil" : "Elige una foto de perfil para terminar";
         JLabel titulo = new JLabel(textoTitulo, SwingConstants.CENTER);
         titulo.setForeground(Color.WHITE);
@@ -51,7 +50,7 @@ public class VentanaSeleccionAvatar extends JFrame {
         titulo.setBackground(new Color(25, 25, 25));
         add(titulo, BorderLayout.NORTH);
 
-        // --- GRID DE FOTOS ---
+        
         JPanel grid = new JPanel(new GridLayout(2, 4, 15, 15));
         grid.setBackground(new Color(20, 20, 20));
         grid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -65,7 +64,7 @@ public class VentanaSeleccionAvatar extends JFrame {
 
         for (String nombreArchivo : nombresArchivos) {
             ImageIcon icon = null;
-            // Intentamos cargar la imagen buscando en varias carpetas comunes
+            
             java.net.URL url = cl.getResource(nombreArchivo);
             if (url == null) url = cl.getResource("resources/" + nombreArchivo);
             if (url == null) url = cl.getResource("Imagenes/" + nombreArchivo);
@@ -74,13 +73,13 @@ public class VentanaSeleccionAvatar extends JFrame {
                 icon = new ImageIcon(url);
             } else {
                 System.err.println("Imagen no encontrada: " + nombreArchivo);
-                icon = new ImageIcon(); // Placeholder para evitar error null
+                icon = new ImageIcon(); 
             }
 
-            // Variable final para usar dentro del listener
+        
             final ImageIcon iconFinal = icon; 
             
-            // Crear botón con la imagen escalada
+            
             JButton b = new JButton(escalarIcono(icon, 120, 120));
             b.setBackground(new Color(35, 35, 35));
             b.setFocusPainted(false);
@@ -89,31 +88,31 @@ public class VentanaSeleccionAvatar extends JFrame {
             // --- ACCIÓN AL PULSAR UNA FOTO ---
             b.addActionListener(e -> {
                 if (modoEdicion) {
-                    // MODO EDICIÓN: Actualizar usuario existente
+                    
                     String usuarioActual = UserSession.getUsuario(); 
                     
-                    // Llamamos al método que YA existe en tu ConexionBD
+                    
                     boolean exito = ConexionBD.actualizarFotoUsuario(usuarioActual, nombreArchivo);
                     
                     if (exito) {
                         JOptionPane.showMessageDialog(this, "Foto de perfil actualizada.");
                         
-                        // 1. Actualizamos la sesión en memoria
+                    
                         UserSession.set(usuarioActual, iconFinal);
                         
-                        // 2. Actualizamos la ventana principal visualmente
+                    
                         if (ventanaPrincipalRef != null) {
                             ventanaPrincipalRef.actualizarAvatarEnInterfaz(iconFinal);
                         }
                         
-                        // 3. Cerramos esta ventana
+                    
                         dispose(); 
                     } else {
                         JOptionPane.showMessageDialog(this, "Error al guardar en la base de datos.");
                     }
 
                 } else {
-                    // MODO REGISTRO: Crear usuario nuevo (Lógica antigua)
+                    
                     boolean exito = ConexionBD.crearUsuario(nombreTemp, gmailTemp, passTemp, nombreArchivo);
 
                     if (exito) {
@@ -146,10 +145,10 @@ public class VentanaSeleccionAvatar extends JFrame {
         
         btnExit.addActionListener(e -> {
             if (modoEdicion) {
-                // Si estamos editando, solo cerramos esta ventana
+               
                 dispose();
             } else {
-                // Si estamos registrando, volvemos al login
+               
                 new VentanaInicioSesion().setVisible(true);
                 dispose();
             }

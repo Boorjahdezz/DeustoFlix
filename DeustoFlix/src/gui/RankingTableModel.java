@@ -12,9 +12,9 @@ public class RankingTableModel extends AbstractTableModel {
     private List<MediaItem> datos;
 
     // --- 1. CONSTRUCTOR VACÍO (NUEVO) ---
-    // Este es el que usa tu MainGuiWindow ahora
+
     public RankingTableModel() {
-        this.datos = new ArrayList<>(); // Inicializamos lista vacía para que no de error
+        this.datos = new ArrayList<>(); 
     }
 
     // --- 2. CONSTRUCTOR CON DATOS (EL QUE YA TENÍAS) ---
@@ -22,13 +22,12 @@ public class RankingTableModel extends AbstractTableModel {
         this.datos = datos;
     }
 
-    // Método para actualizar los datos desde fuera (Buscador/Filtros)
+ 
     public void setDatos(List<MediaItem> nuevos) {
         this.datos = nuevos;
-        fireTableDataChanged(); // Avisa a la tabla visual de que los datos han cambiado
-    }
+        fireTableDataChanged(); }
     
-    // Método auxiliar para obtener el objeto al hacer doble click
+    
     public MediaItem getItemAt(int row) {
         if (datos != null && row >= 0 && row < datos.size()) {
             return datos.get(row);

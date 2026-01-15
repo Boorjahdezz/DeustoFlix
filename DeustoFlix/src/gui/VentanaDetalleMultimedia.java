@@ -14,7 +14,6 @@ public class VentanaDetalleMultimedia extends JFrame {
         setTitle("Detalles: " + item.getTitulo());
         setSize(600, 450);
         setLocationRelativeTo(null);
-        // DISPOSE_ON_CLOSE para que solo se cierre esta ventana y no toda la app
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(30, 30, 30));
@@ -35,21 +34,21 @@ public class VentanaDetalleMultimedia extends JFrame {
         gbc.insets = new Insets(10, 15, 10, 15);
         gbc.fill = GridBagConstraints.BOTH;
 
-        // 1. Imagen (Izquierda)
+        
         ImageIcon iconoOriginal = item.getImagen();
-        // Escalamos la imagen para que se vea más grande en el detalle
+      
         JLabel lblImagen = new JLabel(escalarImagen(iconoOriginal, 200, 280));
         lblImagen.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         
         gbc.gridx = 0; 
         gbc.gridy = 0; 
-        gbc.gridheight = 5; // Ocupa varias filas de alto
+        gbc.gridheight = 5;
         panelCentral.add(lblImagen, gbc);
 
-        // 2. Datos (Derecha)
+        
         gbc.gridx = 1; 
-        gbc.gridheight = 1; // Reseteamos altura
-        gbc.weightx = 1.0;  // Para que el texto ocupe el resto del ancho
+        gbc.gridheight = 1; 
+        gbc.weightx = 1.0;  
 
         // Genero
         gbc.gridy = 0;
@@ -71,14 +70,14 @@ public class VentanaDetalleMultimedia extends JFrame {
             valoracion = ((Serie) item).getValoracion();
         }
         gbc.gridy = 3;
-        // Mostramos la valoración con una estrella ★
+      
         JLabel lblVal = crearEtiquetaDato("Valoración: ", String.format("%.1f / 10", valoracion));
         lblVal.setForeground(new Color(255, 100, 100)); // Rojo suave
         panelCentral.add(lblVal, gbc);
 
-        // Descripción (Sinopsis)
+  
         gbc.gridy = 4;
-        gbc.weighty = 1.0; // Para que ocupe el espacio vertical sobrante
+        gbc.weighty = 1.0;
         JTextArea txtDesc = new JTextArea(item.getDescripcion());
         txtDesc.setLineWrap(true);
         txtDesc.setWrapStyleWord(true);
@@ -88,7 +87,7 @@ public class VentanaDetalleMultimedia extends JFrame {
         txtDesc.setFont(new Font("SansSerif", Font.ITALIC, 14));
         txtDesc.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Lo metemos en un ScrollPane por si el texto es muy largo
+
         JScrollPane scrollDesc = new JScrollPane(txtDesc);
         scrollDesc.setBorder(BorderFactory.createTitledBorder(null, "Sinopsis", 0, 0, new Font("SansSerif", Font.BOLD, 12), Color.WHITE));
         scrollDesc.setOpaque(false);
