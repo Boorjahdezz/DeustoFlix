@@ -4,6 +4,10 @@ import javax.swing.ImageIcon;
 
 public abstract class MediaItem {
 
+    // --- NUEVO CAMPO ID (Necesario para favoritos) ---
+    protected int id;
+    // -------------------------------------------------
+
     private String titulo;
     private String descripcion;
     private Genero genero;
@@ -31,7 +35,17 @@ public abstract class MediaItem {
         this.imagen = imagen;
     }
 
-    // Getters y setters
+    // --- NUEVOS GETTER Y SETTER PARA ID ---
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    // --------------------------------------
+
+    // Getters y setters antiguos (intactos)
     public String getTitulo() {
         return titulo;
     }

@@ -37,10 +37,10 @@ public class VentanaCarga extends JDialog {
 
     public void iniciarCarga(Runnable alFinalizar) {
 
-        // Mostrar la ventana en el hilo del UI
+        
         SwingUtilities.invokeLater(() -> setVisible(true));
 
-        // Hilo de carga
+       
         new Thread(() -> {
             try {
                 for (int i = 0; i <= 100; i++) {
@@ -52,7 +52,7 @@ public class VentanaCarga extends JDialog {
                 e.printStackTrace();
             }
 
-            // Cerrar e iniciar ventana principal
+            
             SwingUtilities.invokeLater(() -> {
                 dispose();
                 if (alFinalizar != null) alFinalizar.run();

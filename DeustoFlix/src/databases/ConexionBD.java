@@ -48,6 +48,23 @@ public class ConexionBD {
                     + "duracion INTEGER, "
                     + "valoracion REAL)";
             stmt.execute(sqlContenido);
+            
+            String sqlFavoritos = "CREATE TABLE IF NOT EXISTS favoritos ("
+                    + "usuario_nombre TEXT, "
+                    + "contenido_id INTEGER, "
+                    + "PRIMARY KEY (usuario_nombre, contenido_id), "
+                    + "FOREIGN KEY(usuario_nombre) REFERENCES usuarios(nombre), "
+                    + "FOREIGN KEY(contenido_id) REFERENCES contenido(id))";
+            stmt.execute(sqlFavoritos);
+
+            String sqlValoraciones = "CREATE TABLE IF NOT EXISTS valoraciones ("
+                    + "usuario_nombre TEXT, "
+                    + "contenido_id INTEGER, "
+                    + "nota INTEGER, " 
+                    + "PRIMARY KEY (usuario_nombre, contenido_id), "
+                    + "FOREIGN KEY(usuario_nombre) REFERENCES usuarios(nombre), "
+                    + "FOREIGN KEY(contenido_id) REFERENCES contenido(id))";
+            stmt.execute(sqlValoraciones);
 
         } catch (SQLException e) { 
             e.printStackTrace(); 
@@ -126,7 +143,6 @@ public class ConexionBD {
         }
     }
 
-    // --- NUEVO MÉTODO PARA CAMBIAR FOTO ---
     public static boolean actualizarFotoUsuario(String nombre, String nuevaRutaFoto) {
         String sql = "UPDATE usuarios SET foto = ? WHERE nombre = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -139,19 +155,40 @@ public class ConexionBD {
             return false;
         }
     }
-    // --------------------------------------
 
+    // --- MÉTODO MODIFICADO: ELIMINAR USUARIO COMPLETO ---
     public static boolean eliminarUsuario(String nombre) {
-        String sql = "DELETE FROM usuarios WHERE nombre = ?";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, nombre);
-            int rowsAffected = pst.executeUpdate();
-            return rowsAffected > 0; 
+        // Consultas para borrar todo lo relacionado
+        String sqlBorrarFavoritos = "DELETE FROM favoritos WHERE usuario_nombre = ?";
+        String sqlBorrarValoraciones = "DELETE FROM valoraciones WHERE usuario_nombre = ?";
+        String sqlBorrarUsuario = "DELETE FROM usuarios WHERE nombre = ?";
+        
+        try (Connection con = getConnection()) {
+            // 1. Borramos sus favoritos
+            try (PreparedStatement pst = con.prepareStatement(sqlBorrarFavoritos)) {
+                pst.setString(1, nombre);
+                pst.executeUpdate();
+            }
+            
+            // 2. Borramos sus valoraciones (estrellas)
+            try (PreparedStatement pst = con.prepareStatement(sqlBorrarValoraciones)) {
+                pst.setString(1, nombre);
+                pst.executeUpdate();
+            }
+            
+            // 3. Finalmente, borramos al usuario (y su correo/pass se van con él)
+            try (PreparedStatement pst = con.prepareStatement(sqlBorrarUsuario)) {
+                pst.setString(1, nombre);
+                int rowsAffected = pst.executeUpdate();
+                return rowsAffected > 0; 
+            }
+            
         } catch (SQLException e) {
-            System.err.println("Error al eliminar usuario: " + e.getMessage());
+            System.err.println("Error al eliminar usuario completo: " + e.getMessage());
             return false;
         }
     }
+    // ---------------------------------------------------
 
     // --- GESTIÓN DE CONTENIDO ---
 
@@ -179,6 +216,7 @@ public class ConexionBD {
         String sql = "SELECT * FROM contenido";
         try (Connection con = getConnection(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
+                int id = rs.getInt("id"); 
                 String titulo = rs.getString("titulo");
                 String tipo = rs.getString("tipo");
                 Genero genero = Genero.fromString(rs.getString("genero"));
@@ -186,8 +224,15 @@ public class ConexionBD {
                 String desc = rs.getString("descripcion");
                 int dur = rs.getInt("duracion");
                 double val = rs.getDouble("valoracion");
-                if ("Pelicula".equals(tipo)) lista.add(new Pelicula(titulo, desc, genero, categoria, val, dur));
-                else lista.add(new Serie(titulo, desc, genero, categoria, val, dur));
+                
+                MediaItem item;
+                if ("Pelicula".equals(tipo)) {
+                    item = new Pelicula(titulo, desc, genero, categoria, val, dur);
+                } else {
+                    item = new Serie(titulo, desc, genero, categoria, val, dur);
+                }
+                item.setId(id);
+                lista.add(item);
             }
         } catch (SQLException e) { 
             e.printStackTrace(); 
@@ -256,23 +301,17 @@ public class ConexionBD {
                     insertarContenido(new Serie(titulo, descripcion, genero, categoria, val, dur));
                 }
             }
-            System.out.println("Series cargadas correctamente.");
         } catch (Exception e) { 
             System.err.println("Error cargando CSV Series: " + e.getMessage()); 
         }
     }
 
-    /**
-     * Obtiene todo el contenido 
-     */
     public static ArrayList<String[]> obtenerTodosUsuarios() {
         ArrayList<String[]> usuarios = new ArrayList<>();
         String sql = "SELECT id, nombre, gmail, foto FROM usuarios ORDER BY nombre";
-        
         try (Connection con = getConnection();
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            
             while (rs.next()) {
                 String[] usuario = new String[4];
                 usuario[0] = String.valueOf(rs.getInt("id"));
@@ -282,35 +321,22 @@ public class ConexionBD {
                 usuarios.add(usuario);
             }
         } catch (SQLException e) {
-            System.err.println("Error al obtener usuarios: " + e.getMessage());
             e.printStackTrace();
         }
-        
         return usuarios;
     }
 
-    /**
-     * Borra el contenido mediante el id
-     */
     public static boolean eliminarContenido(int id) {
         String sql = "DELETE FROM contenido WHERE id = ?";
-        
-        try (Connection con = getConnection();
-             PreparedStatement pst = con.prepareStatement(sql)) {
-            
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, id);
             int rowsAffected = pst.executeUpdate();
             return rowsAffected > 0;
-            
         } catch (SQLException e) {
-            System.err.println("Error al eliminar contenido: " + e.getMessage());
             return false;
         }
     }
 
-    /**
-     * Actualiza el contenido 
-     */
     public static boolean actualizarContenido(int id, String titulo, String tipo, 
                                              String genero, String categoria, 
                                              String descripcion, int duracion, 
@@ -318,10 +344,7 @@ public class ConexionBD {
         String sql = "UPDATE contenido SET titulo = ?, tipo = ?, genero = ?, " +
                      "categoria = ?, descripcion = ?, duracion = ?, valoracion = ? " +
                      "WHERE id = ?";
-        
-        try (Connection con = getConnection();
-             PreparedStatement pst = con.prepareStatement(sql)) {
-            
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, titulo);
             pst.setString(2, tipo);
             pst.setString(3, genero);
@@ -330,27 +353,17 @@ public class ConexionBD {
             pst.setInt(6, duracion);
             pst.setDouble(7, valoracion);
             pst.setInt(8, id);
-            
             int rowsAffected = pst.executeUpdate();
             return rowsAffected > 0;
-            
         } catch (SQLException e) {
-            System.err.println("Error al actualizar contenido: " + e.getMessage());
             return false;
         }
     }
 
-    /**
-     * Obtener el todo el contenido con el id (for admin management)
-     */
     public static ArrayList<String[]> obtenerTodoContenidoConID() {
         ArrayList<String[]> contenidos = new ArrayList<>();
         String sql = "SELECT id, titulo, tipo, genero, categoria, duracion, valoracion FROM contenido ORDER BY titulo";
-        
-        try (Connection con = getConnection();
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
+        try (Connection con = getConnection(); Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 String[] contenido = new String[7];
                 contenido[0] = String.valueOf(rs.getInt("id"));
@@ -363,17 +376,121 @@ public class ConexionBD {
                 contenidos.add(contenido);
             }
         } catch (SQLException e) {
-            System.err.println("Error al obtener contenido: " + e.getMessage());
             e.printStackTrace();
         }
-        
         return contenidos;
     }
 
-    /**
-     * Verifica si el usuario es administrador
-     */
     public static boolean esAdmin(String nombre, String contrasenya) {
         return "admin".equals(nombre) && "admin".equals(contrasenya);
+    }
+    
+    // --- GESTIÓN DE FAVORITOS ---
+    
+    public static boolean esFavorito(String usuario, int idContenido) {
+        String sql = "SELECT 1 FROM favoritos WHERE usuario_nombre = ? AND contenido_id = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            pst.setInt(2, idContenido);
+            ResultSet rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
+    public static void toggleFavorito(String usuario, int idContenido) {
+        if (esFavorito(usuario, idContenido)) {
+            String sql = "DELETE FROM favoritos WHERE usuario_nombre = ? AND contenido_id = ?";
+            try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setString(1, usuario);
+                pst.setInt(2, idContenido);
+                pst.executeUpdate();
+            } catch (SQLException e) { e.printStackTrace(); }
+        } else {
+            String sql = "INSERT INTO favoritos (usuario_nombre, contenido_id) VALUES (?, ?)";
+            try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setString(1, usuario);
+                pst.setInt(2, idContenido);
+                pst.executeUpdate();
+            } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    public static ArrayList<Integer> obtenerIdsFavoritos(String usuario) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        String sql = "SELECT contenido_id FROM favoritos WHERE usuario_nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                ids.add(rs.getInt("contenido_id"));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return ids;
+    }
+
+    public static void vaciarFavoritos(String usuario) {
+        String sql = "DELETE FROM favoritos WHERE usuario_nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            pst.executeUpdate();
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        }
+    }
+    
+    // --- GESTIÓN DE VALORACIONES (ESTRELLAS) ---
+    
+    public static void valorarContenido(String usuario, int idContenido, int nota) {
+        String sql = "INSERT OR REPLACE INTO valoraciones (usuario_nombre, contenido_id, nota) VALUES (?, ?, ?)";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            pst.setInt(2, idContenido);
+            pst.setInt(3, nota);
+            pst.executeUpdate();
+            
+            recalcularMedia(idContenido);
+            
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+    
+    public static int obtenerMiValoracion(String usuario, int idContenido) {
+        String sql = "SELECT nota FROM valoraciones WHERE usuario_nombre = ? AND contenido_id = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            pst.setInt(2, idContenido);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) return rs.getInt("nota");
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0; 
+    }
+    
+    private static void recalcularMedia(int idContenido) {
+        String sqlAvg = "SELECT AVG(nota) as media FROM valoraciones WHERE contenido_id = ?";
+        double mediaEstrellas = 0;
+        
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sqlAvg)) {
+            pst.setInt(1, idContenido);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) mediaEstrellas = rs.getDouble("media");
+        } catch (SQLException e) { e.printStackTrace(); }
+        
+        double nuevaValoracionGlobal = mediaEstrellas * 2;
+        
+        String sqlUpdate = "UPDATE contenido SET valoracion = ? WHERE id = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sqlUpdate)) {
+            pst.setDouble(1, nuevaValoracionGlobal);
+            pst.setInt(2, idContenido);
+            pst.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+    
+    public static double obtenerValoracionMedia(int idContenido) {
+        String sql = "SELECT valoracion FROM contenido WHERE id = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, idContenido);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) return rs.getDouble("valoracion");
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0.0;
     }
 }

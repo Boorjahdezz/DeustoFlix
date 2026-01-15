@@ -3,18 +3,23 @@ package gui;
 import domain.MediaItem;
 import domain.Pelicula;
 import domain.Serie;
+import gui.avatar.UserSession;
+import databases.ConexionBD;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class VentanaDetalleMultimedia extends JFrame {
 
+    private JButton[] estrellas; // Array para las 5 estrellas
+    private JLabel lblVal;       // Etiqueta global para actualizarla
+
     public VentanaDetalleMultimedia(MediaItem item) {
         setTitle("Detalles: " + item.getTitulo());
-        setSize(600, 450);
+        setSize(600, 550); // Un poco más alto para las estrellas
         setLocationRelativeTo(null);
-        // DISPOSE_ON_CLOSE para que solo se cierre esta ventana y no toda la app
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(30, 30, 30));
@@ -35,23 +40,22 @@ public class VentanaDetalleMultimedia extends JFrame {
         gbc.insets = new Insets(10, 15, 10, 15);
         gbc.fill = GridBagConstraints.BOTH;
 
-        // 1. Imagen (Izquierda)
+        // Imagen
         ImageIcon iconoOriginal = item.getImagen();
-        // Escalamos la imagen para que se vea más grande en el detalle
         JLabel lblImagen = new JLabel(escalarImagen(iconoOriginal, 200, 280));
         lblImagen.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         
         gbc.gridx = 0; 
         gbc.gridy = 0; 
-        gbc.gridheight = 5; // Ocupa varias filas de alto
+        gbc.gridheight = 6; // Aumentado para acomodar estrellas
         panelCentral.add(lblImagen, gbc);
 
-        // 2. Datos (Derecha)
+        // Datos derecha
         gbc.gridx = 1; 
-        gbc.gridheight = 1; // Reseteamos altura
-        gbc.weightx = 1.0;  // Para que el texto ocupe el resto del ancho
+        gbc.gridheight = 1; 
+        gbc.weightx = 1.0;  
 
-        // Genero
+        // Género
         gbc.gridy = 0;
         panelCentral.add(crearEtiquetaDato("Género: ", item.getGenero() != null ? item.getGenero().name() : "Desconocido"), gbc);
 
@@ -63,22 +67,48 @@ public class VentanaDetalleMultimedia extends JFrame {
         gbc.gridy = 2;
         panelCentral.add(crearEtiquetaDato("Duración: ", item.getDuracion() + " min"), gbc);
 
-        // Valoración (Hay que comprobar si es Película o Serie)
-        double valoracion = 0.0;
-        if (item instanceof Pelicula) {
-            valoracion = ((Pelicula) item).getValoracion();
-        } else if (item instanceof Serie) {
-            valoracion = ((Serie) item).getValoracion();
-        }
+        // Valoración Global
+        double valoracion = obtenerValoracionActual(item);
         gbc.gridy = 3;
-        // Mostramos la valoración con una estrella ★
-        JLabel lblVal = crearEtiquetaDato("Valoración: ", String.format("%.1f / 10", valoracion));
+        lblVal = crearEtiquetaDato("Valoración Global: ", String.format("%.1f / 10", valoracion));
         lblVal.setForeground(new Color(255, 100, 100)); // Rojo suave
         panelCentral.add(lblVal, gbc);
 
-        // Descripción (Sinopsis)
+        // --- PANEL DE ESTRELLAS (NUEVO) ---
         gbc.gridy = 4;
-        gbc.weighty = 1.0; // Para que ocupe el espacio vertical sobrante
+        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panelEstrellas.setBackground(new Color(30, 30, 30));
+        panelEstrellas.setBorder(BorderFactory.createTitledBorder(null, "Tu Valoración", 0, 0, new Font("Arial", Font.BOLD, 12), Color.GRAY));
+        
+        estrellas = new JButton[5];
+        for (int i = 0; i < 5; i++) {
+            final int nota = i + 1; // 1 a 5
+            estrellas[i] = new JButton("★");
+            estrellas[i].setFont(new Font("SansSerif", Font.BOLD, 24));
+            estrellas[i].setForeground(Color.GRAY); // Desactivada por defecto
+            estrellas[i].setBackground(new Color(30, 30, 30));
+            estrellas[i].setBorderPainted(false);
+            estrellas[i].setFocusPainted(false);
+            estrellas[i].setContentAreaFilled(false);
+            estrellas[i].setCursor(new Cursor(Cursor.HAND_CURSOR));
+            
+            // Acción al clicar
+            estrellas[i].addActionListener(e -> valorar(nota, item));
+            
+            panelEstrellas.add(estrellas[i]);
+        }
+        
+        // Cargar valoración existente si el usuario ya votó
+        String usuario = UserSession.getUsuario();
+        int miNota = ConexionBD.obtenerMiValoracion(usuario, item.getId());
+        pintarEstrellas(miNota);
+
+        panelCentral.add(panelEstrellas, gbc);
+        // ----------------------------------
+
+        // Descripción (Sinopsis)
+        gbc.gridy = 5;
+        gbc.weighty = 1.0;
         JTextArea txtDesc = new JTextArea(item.getDescripcion());
         txtDesc.setLineWrap(true);
         txtDesc.setWrapStyleWord(true);
@@ -87,8 +117,7 @@ public class VentanaDetalleMultimedia extends JFrame {
         txtDesc.setForeground(Color.LIGHT_GRAY);
         txtDesc.setFont(new Font("SansSerif", Font.ITALIC, 14));
         txtDesc.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Lo metemos en un ScrollPane por si el texto es muy largo
+
         JScrollPane scrollDesc = new JScrollPane(txtDesc);
         scrollDesc.setBorder(BorderFactory.createTitledBorder(null, "Sinopsis", 0, 0, new Font("SansSerif", Font.BOLD, 12), Color.WHITE));
         scrollDesc.setOpaque(false);
@@ -110,7 +139,44 @@ public class VentanaDetalleMultimedia extends JFrame {
         add(panelBtn, BorderLayout.SOUTH);
     }
 
-    // --- MÉTODOS AUXILIARES QUE FALTABAN ---
+    private void valorar(int nota, MediaItem item) {
+        // 1. Efecto visual
+        pintarEstrellas(nota);
+        
+        // 2. Guardar en BD
+        String usuario = UserSession.getUsuario();
+        ConexionBD.valorarContenido(usuario, item.getId(), nota);
+        
+        // 3. Actualizar la media global visualmente
+        double nuevaMedia = ConexionBD.obtenerValoracionMedia(item.getId());
+        
+        // Actualizamos el objeto local también por si acaso
+        if (item instanceof Pelicula) ((Pelicula)item).setValoracion(nuevaMedia);
+        else if (item instanceof Serie) ((Serie)item).setValoracion(nuevaMedia);
+        
+        lblVal.setText("<html><b>Valoración Global: </b> <font color='#FF6464'>" + String.format("%.1f / 10", nuevaMedia) + "</font></html>");
+        
+        JOptionPane.showMessageDialog(this, "¡Valoración de " + nota + " estrellas guardada!");
+    }
+
+    private void pintarEstrellas(int nota) {
+        // Recorre las 5 estrellas
+        for (int i = 0; i < 5; i++) {
+            if (i < nota) {
+                estrellas[i].setForeground(Color.YELLOW); // Seleccionada
+            } else {
+                estrellas[i].setForeground(Color.GRAY);   // Deseleccionada
+            }
+        }
+        // Truco para repintar el componente
+        repaint();
+    }
+    
+    private double obtenerValoracionActual(MediaItem item) {
+        if (item instanceof Pelicula) return ((Pelicula) item).getValoracion();
+        if (item instanceof Serie) return ((Serie) item).getValoracion();
+        return 0.0;
+    }
 
     private JLabel crearEtiquetaDato(String titulo, String valor) {
         JLabel lbl = new JLabel("<html><b>" + titulo + "</b> " + valor + "</html>");
@@ -120,7 +186,7 @@ public class VentanaDetalleMultimedia extends JFrame {
     }
 
     private ImageIcon escalarImagen(ImageIcon icon, int w, int h) {
-        if (icon == null || icon.getIconWidth() <= 0) return null; // Evitar error si no hay imagen
+        if (icon == null || icon.getIconWidth() <= 0) return null;
         Image img = icon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
     }

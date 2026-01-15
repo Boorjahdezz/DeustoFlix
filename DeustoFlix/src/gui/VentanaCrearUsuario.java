@@ -1,20 +1,19 @@
 package gui;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter; // Necesario para detectar teclas
+import java.awt.event.KeyEvent;   // Necesario para detectar teclas
 import javax.swing.*;
-
+import javax.swing.border.EmptyBorder;
 
 import gui.avatar.VentanaSeleccionAvatar;
-import gui.CaptchaVerificationPanel;
 
 public class VentanaCrearUsuario extends JFrame {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private CaptchaVerificationPanel panelCaptcha;
-	public VentanaCrearUsuario() {
+    private static final long serialVersionUID = 1L;
+    private CaptchaVerificationPanel panelCaptcha; 
+
+    public VentanaCrearUsuario() {
         setSize(1200, 800);
         setTitle("Crear Usuario - Paso 1");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,30 +34,64 @@ public class VentanaCrearUsuario extends JFrame {
         panelExit.add(exit);
         add(panelExit, BorderLayout.NORTH);
 
-        // Campos
+        // --- CAMPOS DEL FORMULARIO ---
+
+        // 1. Nombre
         JTextField nombreUsuario = new JTextField();
         estilarCampo(nombreUsuario);
-
         JLabel nombreUsuarioLabel = new JLabel("Nombre de Usuario");
         estilarLabel(nombreUsuarioLabel);
 
+        // 2. Contraseña
         JPasswordField contraseñaUsuario = new JPasswordField();
         estilarCampo(contraseñaUsuario);
-
         JLabel contraseñaUsuarioLabel = new JLabel("Contraseña");
         estilarLabel(contraseñaUsuarioLabel);
 
+        // 3. Gmail (CON BLOQUEO DE ARROBA)
+        JPanel panelEmailContainer = new JPanel(new BorderLayout());
+        panelEmailContainer.setPreferredSize(new Dimension(300, 40));
+        panelEmailContainer.setBackground(new Color(30, 30, 30));
+        panelEmailContainer.setBorder(BorderFactory.createLineBorder(Color.GRAY)); 
+
         JTextField gmailUsuario = new JTextField();
         estilarCampo(gmailUsuario);
+        gmailUsuario.setBorder(new EmptyBorder(0, 5, 0, 0)); 
+        gmailUsuario.setPreferredSize(null); 
+        
+        // --- AQUÍ ESTÁ EL CAMBIO: KeyListener para bloquear '@' ---
+        gmailUsuario.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // Si el carácter escrito es una arroba...
+                if (e.getKeyChar() == '@') {
+                    e.consume(); // ¡BLOQUEAR! Evita que se escriba en la caja
+                    // Avisar al usuario
+                    JOptionPane.showMessageDialog(VentanaCrearUsuario.this, 
+                        "¡No hace falta! El '@gmail.com' ya está puesto a la derecha.", 
+                        "Aviso", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        // ----------------------------------------------------------
+        
+        JLabel lblDominio = new JLabel("@gmail.com");
+        lblDominio.setForeground(Color.LIGHT_GRAY);
+        lblDominio.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblDominio.setBorder(new EmptyBorder(0, 0, 0, 10)); 
+
+        panelEmailContainer.add(gmailUsuario, BorderLayout.CENTER);
+        panelEmailContainer.add(lblDominio, BorderLayout.EAST);
 
         JLabel gmailUsuarioLabel = new JLabel("Gmail");
         estilarLabel(gmailUsuarioLabel);
         
+        // 4. Captcha
         JLabel captchaLabel = new JLabel("Verificación CAPTCHA");
-        captchaLabel.setForeground(Color.WHITE);
-        captchaLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        estilarLabel(captchaLabel);
         
-        CaptchaVerificationPanel panelCaptcha = new CaptchaVerificationPanel();
+        panelCaptcha = new CaptchaVerificationPanel();
 
         // BOTÓN SIGUIENTE
         JButton btnSiguiente = new JButton("Siguiente");
@@ -66,15 +99,19 @@ public class VentanaCrearUsuario extends JFrame {
         btnSiguiente.setFont(new Font("Arial", Font.BOLD, 16));
 
         btnSiguiente.addActionListener(e -> {
-            String nombre = nombreUsuario.getText();
-            String gmail = gmailUsuario.getText();
+            String nombre = nombreUsuario.getText().trim();
+            String parteUsuarioEmail = gmailUsuario.getText().trim();
             String pass = new String(contraseñaUsuario.getPassword());
 
-            // Validación simple antes de pasar al siguiente paso
-            if(nombre.isEmpty() || gmail.isEmpty() || pass.isEmpty()) {
+            if(nombre.isEmpty() || parteUsuarioEmail.isEmpty() || pass.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Por favor, rellena todos los campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
+            // Construimos el correo completo
+            String gmailCompleto = parteUsuarioEmail + "@gmail.com";
+
+            // Validaciones Captcha
             if (panelCaptcha.isBloqueado()) {
                 JOptionPane.showMessageDialog(this, 
                     "Demasiados intentos fallidos. Por favor espere.", 
@@ -84,15 +121,12 @@ public class VentanaCrearUsuario extends JFrame {
             }
             if (!panelCaptcha.verificarCaptcha()) {
                 int intentosRestantes = panelCaptcha.getIntentosRestantes();
-                
                 if (panelCaptcha.isBloqueado()) {
-                    // Se alcanzó el límite de intentos, el componente se bloqueó automáticamente
                     JOptionPane.showMessageDialog(this, 
                         "Has alcanzado el número máximo de intentos. Espera para continuar.", 
                         "Bloqueado", 
                         JOptionPane.ERROR_MESSAGE);
                 } else {
-                    // Aún quedan intentos
                     JOptionPane.showMessageDialog(this, 
                         "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, 
                         "Error CAPTCHA", 
@@ -100,9 +134,9 @@ public class VentanaCrearUsuario extends JFrame {
                 }
                 return;
             }
-            // No guardamos todavía. Abrimos la selección de avatar pasando los datos.
-            new VentanaSeleccionAvatar(nombre, gmail, pass).setVisible(true);
-            dispose(); // Cerramos esta ventana
+      
+            new VentanaSeleccionAvatar(nombre, gmailCompleto, pass).setVisible(true);
+            dispose(); 
         });
 
         // Layout
@@ -119,7 +153,7 @@ public class VentanaCrearUsuario extends JFrame {
         gbc.gridy = 2; panelForm.add(contraseñaUsuarioLabel, gbc);
         gbc.gridy = 3; panelForm.add(contraseñaUsuario, gbc);
         gbc.gridy = 4; panelForm.add(gmailUsuarioLabel, gbc);
-        gbc.gridy = 5; panelForm.add(gmailUsuario, gbc);
+        gbc.gridy = 5; panelForm.add(panelEmailContainer, gbc); // Añadimos el panel compuesto
         gbc.gridy = 6; panelForm.add(captchaLabel, gbc);
         gbc.gridy = 7; panelForm.add(panelCaptcha, gbc);
         gbc.gridy = 8; panelForm.add(btnSiguiente, gbc);
@@ -127,16 +161,18 @@ public class VentanaCrearUsuario extends JFrame {
         add(panelForm, BorderLayout.CENTER);
     }
 
-    // Métodos auxiliares para no repetir código de estilo
+    // Métodos auxiliares
     private void estilarLabel(JLabel lbl) {
         lbl.setForeground(Color.WHITE);
         lbl.setFont(new Font("Arial", Font.BOLD, 16));
     }
+    
     private void estilarCampo(JTextField txt) {
         txt.setPreferredSize(new Dimension(300, 40));
         txt.setBackground(new Color(30, 30, 30));
         txt.setForeground(Color.WHITE);
         txt.setFont(new Font("Arial", Font.PLAIN, 18));
+        txt.setCaretColor(Color.WHITE); 
         txt.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
 }
