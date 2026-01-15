@@ -423,5 +423,14 @@ public class ConexionBD {
         } catch (SQLException e) { e.printStackTrace(); }
         return ids;
     }
-    // -------------------------------------
+    public static void vaciarFavoritos(String usuario) {
+        String sql = "DELETE FROM favoritos WHERE usuario_nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            pst.executeUpdate();
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        }
+    }
+    
 }
