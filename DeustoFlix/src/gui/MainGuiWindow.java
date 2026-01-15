@@ -2,6 +2,8 @@ package gui;
 
 import domain.*;
 import databases.ConexionBD;
+import gui.avatar.VentanaSeleccionAvatar; // IMPORTANTE
+import gui.avatar.UserSession;           // IMPORTANTE
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +16,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 public class MainGuiWindow extends JFrame {
 
@@ -23,7 +24,7 @@ public class MainGuiWindow extends JFrame {
     private MediaRepository repo;
     private final String usuario;
     private JLabel userLabel; 
-    private final ImageIcon avatar;
+    private ImageIcon avatar; // Quitamos 'final' para poder actualizarlo
 
     // --- COLORES ---
     private final Color COLOR_NORMAL = new Color(30, 30, 30);
@@ -36,6 +37,11 @@ public class MainGuiWindow extends JFrame {
     public MainGuiWindow(String usuario, ImageIcon avatar) {
         this.usuario = usuario;
         this.avatar = avatar;
+
+        // Aseguramos que la sesión esté sincronizada al abrir
+        if (!usuario.equals("Invitado")) {
+            UserSession.set(usuario, avatar);
+        }
 
         setTitle("DeustoFlix");
         
@@ -165,6 +171,15 @@ public class MainGuiWindow extends JFrame {
         
         actualizarSeleccionBoton(btnInicio, todosLosBotones);
     }
+    
+    // --- MÉTODO NUEVO: Para actualizar el icono desde la otra ventana ---
+    public void actualizarAvatarEnInterfaz(ImageIcon nuevoIcono) {
+        this.avatar = nuevoIcono;
+        if (nuevoIcono != null) {
+            userLabel.setIcon(escalarIcono(nuevoIcono, 40, 40));
+            userLabel.repaint();
+        }
+    }
 
     // ================================================================
     //  INICIO CON BUSCADOR + RECOMENDACIONES
@@ -234,19 +249,16 @@ public class MainGuiWindow extends JFrame {
                 MediaPanelFilas panelResultados = new MediaPanelFilas(resultados);
                 contentPanel.add(panelResultados);
                 
-                // --- NUEVO: RECOMENDACIONES BASADAS EN LA BÚSQUEDA ---
+                // --- RECOMENDACIONES BASADAS EN LA BÚSQUEDA ---
                 List<MediaItem> recomendados = obtenerRecomendaciones(resultados);
                 
                 if (!recomendados.isEmpty()) {
-                    // Separador visual o espacio
                     contentPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-                    
                     JLabel lblRecomendados = crearTitulo("Porque buscaste esto (Recomendados):");
-                    lblRecomendados.setForeground(new Color(255, 0, 0)); // Un poco más gris para diferenciar
+                    lblRecomendados.setForeground(new Color(255, 0, 0));
                     contentPanel.add(lblRecomendados);
                     contentPanel.add(new MediaPanelFilas(recomendados));
                 }
-                // -----------------------------------------------------
 
             } else {
                 JLabel lblVacio = new JLabel("No se encontraron coincidencias.");
@@ -261,14 +273,10 @@ public class MainGuiWindow extends JFrame {
         refrescar();
     }
     
-    /**
-     * Método inteligente que busca películas del mismo género que los resultados encontrados.
-     */
     private List<MediaItem> obtenerRecomendaciones(List<MediaItem> resultadosBusqueda) {
         List<MediaItem> recomendados = new ArrayList<>();
         List<MediaItem> todoElCatalogo = repo.getAll();
         
-        // 1. Identificar qué géneros hemos encontrado
         Set<Genero> generosEncontrados = new HashSet<>();
         for (MediaItem item : resultadosBusqueda) {
             if (item.getGenero() != null) {
@@ -276,15 +284,12 @@ public class MainGuiWindow extends JFrame {
             }
         }
         
-        // 2. Buscar en el catálogo cosas que coincidan con esos géneros
         for (MediaItem item : todoElCatalogo) {
-            // Si el género coincide Y NO está ya en la lista de resultados (para no repetir)
             if (generosEncontrados.contains(item.getGenero()) && !resultadosBusqueda.contains(item)) {
                 recomendados.add(item);
             }
         }
         
-        // 3. Mezclar para variedad y limitar a 15
         Collections.shuffle(recomendados);
         if (recomendados.size() > 15) {
             return recomendados.subList(0, 15);
@@ -293,9 +298,8 @@ public class MainGuiWindow extends JFrame {
         return recomendados;
     }
 
-
     // ================================================================
-    //  RESTO DEL CÓDIGO (SIN CAMBIOS)
+    //  RESTO DEL CÓDIGO
     // ================================================================
 
     private void estilizarBotonPequeño(JButton b) {
@@ -417,66 +421,11 @@ public class MainGuiWindow extends JFrame {
         modelo.setDatos(lista);
     }
 
+    // --- CAMBIO AQUÍ: Ahora llama a la nueva ventana ---
     private void logicaCambiarFoto() {
-        JDialog dialog = new JDialog(this, "Elige un nuevo avatar", true);
-        dialog.setSize(500, 200); 
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout());
-        
-        JPanel panelAvatares = new JPanel(new GridLayout(1, 4, 10, 10));
-        panelAvatares.setBackground(new Color(30, 30, 30));
-        panelAvatares.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        String[] opciones = {"perfil1.png", "perfil2.png", "perfil3.png", "perfil4.png"};
-
-        for (String nombreArchivo : opciones) {
-            ImageIcon icon = null;
-            java.net.URL url = getClass().getClassLoader().getResource("resources/" + nombreArchivo);
-            
-            if (url == null) {
-                try {
-                     url = new java.io.File("src/resources/" + nombreArchivo).toURI().toURL();
-                } catch (Exception ex) { }
-            }
-
-            if (url != null) {
-                icon = new ImageIcon(url);
-                Image img = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-                icon = new ImageIcon(img);
-            }
-            
-            JButton btnAvatar = new JButton();
-            btnAvatar.setBackground(new Color(50, 50, 50));
-            btnAvatar.setFocusPainted(false);
-            
-            if (icon != null) {
-                btnAvatar.setIcon(icon);
-            } else {
-                btnAvatar.setText("?"); 
-                btnAvatar.setForeground(Color.WHITE);
-            }
-            
-            final ImageIcon iconoFinal = icon;
-            btnAvatar.addActionListener(e -> {
-                boolean exito = ConexionBD.actualizarFotoUsuario(this.usuario, nombreArchivo);
-                if (exito) {
-                    if (iconoFinal != null) {
-                        Image imgPeque = iconoFinal.getImage().getScaledInstance(36, 36, Image.SCALE_SMOOTH);
-                        userLabel.setIcon(new ImageIcon(imgPeque));
-                        userLabel.revalidate(); 
-                        userLabel.repaint();
-                    }
-                    JOptionPane.showMessageDialog(dialog, "Foto de perfil actualizada.");
-                    dialog.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(dialog, "Error al guardar en base de datos.");
-                }
-            });
-            
-            panelAvatares.add(btnAvatar);
-        }
-        dialog.add(panelAvatares, BorderLayout.CENTER);
-        dialog.setVisible(true);
+        // Le pasamos 'this' para que sepa quién la abrió y pueda refrescar el icono al cerrar
+        VentanaSeleccionAvatar ventana = new VentanaSeleccionAvatar(this);
+        ventana.setVisible(true);
     }
 
     private void actualizarSeleccionBoton(JButton activo, JButton[] todos) {

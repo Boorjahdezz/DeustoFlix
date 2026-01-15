@@ -12,20 +12,38 @@ public class VentanaSeleccionAvatar extends JFrame {
     private String nombreTemp;
     private String gmailTemp;
     private String passTemp;
+    
+    // Variables para el modo edición
+    private boolean modoEdicion = false;
+    private MainGuiWindow ventanaPrincipalRef;
 
+    // CONSTRUCTOR 1: MODO REGISTRO (Para cuando creas cuenta nueva)
     public VentanaSeleccionAvatar(String nombre, String gmail, String pass) {
         this.nombreTemp = nombre;
         this.gmailTemp = gmail;
         this.passTemp = pass;
+        this.modoEdicion = false;
+        inicializarComponentes();
+    }
 
-        setTitle("Paso 2: Elige tu avatar");
+    // CONSTRUCTOR 2: MODO EDICIÓN (Nuevo, para cambiar foto desde Main)
+    public VentanaSeleccionAvatar(MainGuiWindow ventanaPrincipal) {
+        this.modoEdicion = true;
+        this.ventanaPrincipalRef = ventanaPrincipal;
+        inicializarComponentes();
+    }
+
+    private void inicializarComponentes() {
+        setTitle(modoEdicion ? "Cambiar Avatar" : "Paso 2: Elige tu avatar");
         setSize(800, 550); 
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Si es edición, solo cerramos esta ventana (DISPOSE), si es registro cerramos app (EXIT)
+        setDefaultCloseOperation(modoEdicion ? JFrame.DISPOSE_ON_CLOSE : JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // --- TÍTULO ---
-        JLabel titulo = new JLabel("Elige una foto de perfil para terminar", SwingConstants.CENTER);
+        String textoTitulo = modoEdicion ? "Selecciona tu nuevo icono de perfil" : "Elige una foto de perfil para terminar";
+        JLabel titulo = new JLabel(textoTitulo, SwingConstants.CENTER);
         titulo.setForeground(Color.WHITE);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 20));
         titulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
@@ -47,39 +65,65 @@ public class VentanaSeleccionAvatar extends JFrame {
 
         for (String nombreArchivo : nombresArchivos) {
             ImageIcon icon = null;
+            // Intentamos cargar la imagen buscando en varias carpetas comunes
             java.net.URL url = cl.getResource(nombreArchivo);
-            
+            if (url == null) url = cl.getResource("resources/" + nombreArchivo);
             if (url == null) url = cl.getResource("Imagenes/" + nombreArchivo);
 
             if (url != null) {
                 icon = new ImageIcon(url);
             } else {
                 System.err.println("Imagen no encontrada: " + nombreArchivo);
-                continue; 
+                icon = new ImageIcon(); // Placeholder para evitar error null
             }
 
-            // CORRECCIÓN: Descomentamos esta línea porque la necesitamos
+            // Variable final para usar dentro del listener
             final ImageIcon iconFinal = icon; 
-
+            
+            // Crear botón con la imagen escalada
             JButton b = new JButton(escalarIcono(icon, 120, 120));
             b.setBackground(new Color(35, 35, 35));
             b.setFocusPainted(false);
             b.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             
-            // ACCIÓN: CREAR USUARIO Y ENTRAR
+            // --- ACCIÓN AL PULSAR UNA FOTO ---
             b.addActionListener(e -> {
-                boolean exito = ConexionBD.crearUsuario(nombreTemp, gmailTemp, passTemp, nombreArchivo);
+                if (modoEdicion) {
+                    // MODO EDICIÓN: Actualizar usuario existente
+                    String usuarioActual = UserSession.getUsuario(); 
+                    
+                    // Llamamos al método que YA existe en tu ConexionBD
+                    boolean exito = ConexionBD.actualizarFotoUsuario(usuarioActual, nombreArchivo);
+                    
+                    if (exito) {
+                        JOptionPane.showMessageDialog(this, "Foto de perfil actualizada.");
+                        
+                        // 1. Actualizamos la sesión en memoria
+                        UserSession.set(usuarioActual, iconFinal);
+                        
+                        // 2. Actualizamos la ventana principal visualmente
+                        if (ventanaPrincipalRef != null) {
+                            ventanaPrincipalRef.actualizarAvatarEnInterfaz(iconFinal);
+                        }
+                        
+                        // 3. Cerramos esta ventana
+                        dispose(); 
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al guardar en la base de datos.");
+                    }
 
-                if (exito) {
-                    JOptionPane.showMessageDialog(this, "¡Bienvenido a DeustoFlix, " + nombreTemp + "!");
-                    
-                    // --- CORRECCIÓN AQUÍ: Pasamos nombre e icono ---
-                    new MainGuiWindow(nombreTemp, iconFinal).setVisible(true);
-                    // -----------------------------------------------
-                    
-                    dispose();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error: El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                    // MODO REGISTRO: Crear usuario nuevo (Lógica antigua)
+                    boolean exito = ConexionBD.crearUsuario(nombreTemp, gmailTemp, passTemp, nombreArchivo);
+
+                    if (exito) {
+                        JOptionPane.showMessageDialog(this, "¡Bienvenido a DeustoFlix, " + nombreTemp + "!");
+                        UserSession.set(nombreTemp, iconFinal);
+                        new MainGuiWindow(nombreTemp, iconFinal).setVisible(true);
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error: El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
             
@@ -88,11 +132,12 @@ public class VentanaSeleccionAvatar extends JFrame {
 
         add(grid, BorderLayout.CENTER);
 
+        // --- BOTÓN CANCELAR ---
         JPanel panelSur = new JPanel();
         panelSur.setBackground(new Color(25, 25, 25));
         panelSur.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        JButton btnExit = new JButton("Cancelar y Volver al Login");
+        JButton btnExit = new JButton(modoEdicion ? "Cancelar" : "Cancelar y Volver al Login");
         btnExit.setFont(new Font("SansSerif", Font.BOLD, 14));
         btnExit.setBackground(new Color(180, 50, 50)); 
         btnExit.setForeground(Color.WHITE);
@@ -100,8 +145,14 @@ public class VentanaSeleccionAvatar extends JFrame {
         btnExit.setPreferredSize(new Dimension(250, 40));
         
         btnExit.addActionListener(e -> {
-            new VentanaInicioSesion().setVisible(true);
-            dispose();
+            if (modoEdicion) {
+                // Si estamos editando, solo cerramos esta ventana
+                dispose();
+            } else {
+                // Si estamos registrando, volvemos al login
+                new VentanaInicioSesion().setVisible(true);
+                dispose();
+            }
         });
 
         panelSur.add(btnExit);
