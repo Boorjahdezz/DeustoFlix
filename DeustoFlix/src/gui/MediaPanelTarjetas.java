@@ -15,7 +15,7 @@ public class MediaPanelTarjetas {
     public static JPanel createCard(MediaItem item) {
         // Usamos BorderLayout para la tarjeta completa
         JPanel card = new JPanel(new BorderLayout());
-        card.setPreferredSize(new Dimension(170, 240)); // Aumentado ligeramente para el pie
+        card.setPreferredSize(new Dimension(170, 240));
         card.setBackground(new Color(40, 40, 40));
         card.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 2, true));
 
@@ -30,11 +30,11 @@ public class MediaPanelTarjetas {
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                card.setBackground(new Color(60, 60, 60)); // Más claro
+                card.setBackground(new Color(60, 60, 60));
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                card.setBackground(new Color(40, 40, 40)); // Color original
+                card.setBackground(new Color(40, 40, 40));
             }
         });
 
@@ -95,7 +95,7 @@ public class MediaPanelTarjetas {
             btnFav.repaint();
         });
 
-        footerPanel.add(new JLabel(" "), BorderLayout.CENTER); // Relleno
+        footerPanel.add(new JLabel(" "), BorderLayout.CENTER); 
         footerPanel.add(btnFav, BorderLayout.EAST);
         
         card.add(footerPanel, BorderLayout.SOUTH);

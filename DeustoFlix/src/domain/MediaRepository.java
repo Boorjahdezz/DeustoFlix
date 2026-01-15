@@ -4,7 +4,6 @@ import javax.swing.ImageIcon;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
-import java.util.List; // Importante
 import databases.*;
 
 public class MediaRepository {
@@ -16,7 +15,7 @@ public class MediaRepository {
         // 1. Cargar contenido de la Base de Datos
         items = ConexionBD.cargarContenido();
         
-        // 2. VERIFICACIÓN: ¿Tenemos series?
+        // 2. verificacion de si hay seeries
         boolean haySeries = false;
         for (MediaItem item : items) {
             if (item instanceof Serie) {
@@ -25,27 +24,23 @@ public class MediaRepository {
             }
         }
 
-        // 3. PLAN DE RESCATE: Si no hay series, intentamos cargar CSV o generarlas a mano
+        // Si no hay series, intentamos cargar CSV o generarlas a mano
         if (!haySeries) {
             System.out.println("⚠️ No se encontraron series en la BD. Intentando cargar CSV...");
-            ConexionBD.cargarSeriesDesdeCSV(); // Intento 1: Leer archivo
+            ConexionBD.cargarSeriesDesdeCSV();
             
-            // Recargamos para ver si funcionó
-            items = ConexionBD.cargarContenido();
-            
-            // Verificamos de nuevo
+            items = ConexionBD.cargarContenido();       
+
             haySeries = false;
             for (MediaItem item : items) if (item instanceof Serie) haySeries = true;
 
-            // Intento 2: Si sigue sin haber series (falló el CSV), las creamos a mano
             if (!haySeries) {
                 System.out.println("⚠️ Falló la carga del CSV. Generando series de respaldo...");
                 generarSeriesDeRespaldo();
-                items = ConexionBD.cargarContenido(); // Recarga final
+                items = ConexionBD.cargarContenido();
             }
         }
-        
-        // 4. Generar imágenes para los items que no tengan (para que se vea bonito)
+       
         for (MediaItem item : items) {
             if (item.getImagen() == null) {
                 item.setImagen(crearImagenDemo(item));
@@ -81,6 +76,7 @@ public class MediaRepository {
         Genero gen = item.getGenero();
         Color baseColor = (gen != null) ? gen.getColor() : Color.DARK_GRAY;
         
+        //pequeña ayuda de Gemini para poner fondo degradado
         GradientPaint gp = new GradientPaint(0, 0, baseColor, w, h, baseColor.darker());
         g.setPaint(gp);
         g.fillRect(0, 0, w, h);
@@ -131,7 +127,7 @@ public class MediaRepository {
     public Map<Genero, ArrayList<MediaItem>> agruparPorGenero(String tipo) {
         Map<Genero, ArrayList<MediaItem>> map = new LinkedHashMap<>();
         
-        // Pre-rellenar categorías para mantener orden (opcional)
+
         for (Genero g : Genero.values()) map.put(g, new ArrayList<>());
 
         for (MediaItem item : items) {
@@ -141,8 +137,6 @@ public class MediaRepository {
                 }
             }
         }
-        
-        // Limpiar categorías vacías para que no salgan filas vacías
         map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
         
         return map;
@@ -158,24 +152,23 @@ public class MediaRepository {
         return map;
     }
     public ArrayList<MediaItem> buscarPorTitulo(String texto) {
-        // Llamamos al método recursivo empezando desde el índice 0
         return buscarRecursivo(items, texto.toLowerCase(), 0);
     }
 
-    /**
-     * Método PRIVADO recursivo que hace el trabajo real.
-     */
+    
+     // Método PRIVADO recursivo.
+     
     private ArrayList<MediaItem> buscarRecursivo(ArrayList<MediaItem> lista, String texto, int indice) {
         
-        // --- 1. CASO BASE (El Freno) ---
+        // --- 1. CASO BASE ---
         if (indice >= lista.size()) {
             return new ArrayList<>();
         }
 
-        // --- 2. CASO RECURSIVO (La Llamada) ---
+        // --- 2. CASO RECURSIVO ---
         ArrayList<MediaItem> resultadosDelResto = buscarRecursivo(lista, texto, indice + 1);
 
-        // --- 3. PROCESO (El Trabajo) ---
+        // --- 3. PROCESO ---
         MediaItem itemActual = lista.get(indice);
         if (itemActual.getTitulo().toLowerCase().contains(texto)) {
             resultadosDelResto.add(0, itemActual);

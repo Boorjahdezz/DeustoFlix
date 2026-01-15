@@ -5,12 +5,12 @@ public class Usuario {
     private String nombre;
     private String gmail;
     private String contrasenya;
-    private String foto; // CAMBIO: Nueva propiedad
+    private String foto;
 
     public Usuario() {
     }
 
-    // Constructor completo con ID
+    // Constructor completto con ID
     public Usuario(int id, String nombre, String gmail, String contrasenya, String foto) {
         this.id = id;
         this.nombre = nombre;

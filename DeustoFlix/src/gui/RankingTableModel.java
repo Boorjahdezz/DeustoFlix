@@ -2,7 +2,7 @@ package gui;
 
 import domain.*;
 import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList; // Necesario importar ArrayList
+import java.util.ArrayList; 
 import java.util.List;
 
 public class RankingTableModel extends AbstractTableModel {
@@ -11,13 +11,13 @@ public class RankingTableModel extends AbstractTableModel {
     private final String[] columnas = {"Título", "Género", "Categoría", "Valoración"};
     private List<MediaItem> datos;
 
-    // --- 1. CONSTRUCTOR VACÍO (NUEVO) ---
+    // --- 1. CONSTRUCTOR VACÍO ---
 
     public RankingTableModel() {
         this.datos = new ArrayList<>(); 
     }
 
-    // --- 2. CONSTRUCTOR CON DATOS (EL QUE YA TENÍAS) ---
+    // --- 2. CONSTRUCTOR CON DATOS ---
     public RankingTableModel(List<MediaItem> datos) {
         this.datos = datos;
     }

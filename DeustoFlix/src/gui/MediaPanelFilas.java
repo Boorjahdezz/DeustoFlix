@@ -101,8 +101,6 @@ public class MediaPanelFilas extends JPanel {
         btnPrev.setVisible(startIdx > 0);
         
         // Importante: Si no hay más items después, ocultamos el botón siguiente
-        // O si quieres que se vea siempre pero deshabilitado, cambia lógica. 
-        // Aquí lo ocultamos para que no haya flecha si no hay nada más.
         btnNext.setVisible(endIdx < items.size());
 
         cardsPanel.revalidate();

@@ -18,7 +18,7 @@ public class VentanaDetalleMultimedia extends JFrame {
 
     public VentanaDetalleMultimedia(MediaItem item) {
         setTitle("Detalles: " + item.getTitulo());
-        setSize(600, 550); // Un poco más alto para las estrellas
+        setSize(600, 550); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -27,7 +27,7 @@ public class VentanaDetalleMultimedia extends JFrame {
         // --- PANEL SUPERIOR (TÍTULO) ---
         JLabel lblTitulo = new JLabel(item.getTitulo(), SwingConstants.CENTER);
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(255, 215, 0)); // Color dorado
+        lblTitulo.setForeground(new Color(255, 215, 0)); 
         lblTitulo.setBorder(new EmptyBorder(20, 10, 20, 10));
         add(lblTitulo, BorderLayout.NORTH);
 
@@ -47,7 +47,7 @@ public class VentanaDetalleMultimedia extends JFrame {
         
         gbc.gridx = 0; 
         gbc.gridy = 0; 
-        gbc.gridheight = 6; // Aumentado para acomodar estrellas
+        gbc.gridheight = 6;
         panelCentral.add(lblImagen, gbc);
 
         // Datos derecha
@@ -104,7 +104,6 @@ public class VentanaDetalleMultimedia extends JFrame {
         pintarEstrellas(miNota);
 
         panelCentral.add(panelEstrellas, gbc);
-        // ----------------------------------
 
         // Descripción (Sinopsis)
         gbc.gridy = 5;

@@ -41,7 +41,7 @@ public class VentanaInicio extends JFrame {
         
         JLabel lblLogo = new JLabel("DEUSTOFLIX");
         lblLogo.setFont(new Font("Arial Black", Font.BOLD, 56));
-        lblLogo.setForeground(new Color(229, 9, 20)); // Netflix red
+        lblLogo.setForeground(new Color(229, 9, 20)); 
         panelHeader.add(lblLogo);
 
         // Panel central con los botones
@@ -99,7 +99,7 @@ public class VentanaInicio extends JFrame {
         // ===== DISCREET ADMIN BUTTON =====
         JButton btnAdmin = new JButton("⚙");
         btnAdmin.setFont(new Font("Arial", Font.PLAIN, 14));
-        btnAdmin.setForeground(new Color(80, 80, 80)); // Very subtle gray
+        btnAdmin.setForeground(new Color(80, 80, 80)); 
         btnAdmin.setBackground(new Color(20, 20, 25));
         btnAdmin.setBorderPainted(false);
         btnAdmin.setFocusPainted(false);

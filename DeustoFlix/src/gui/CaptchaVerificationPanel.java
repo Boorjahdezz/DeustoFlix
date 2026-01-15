@@ -19,30 +19,22 @@ import java.util.Random;
  */
 public class CaptchaVerificationPanel extends JPanel {
 
-    /* =========================
-       CONSTANTES Y ATRIBUTOS
-       ========================= */
 
     private static final long serialVersionUID = 1L;
 
-    // Control de intentos
     private int intentosFallidos = 0;
     private boolean bloqueado = false;
 
-    // CAPTCHA
     private String captchaCorrecto;
 
-    // Componentes gráficos
     private JTextField campoCaptcha;
     private JLabel labelCaptcha;
     private JProgressBar progressBar;
 
     // Temporizadores
+    //ia para saber el uso de "Timer"
     private Timer timer;
 
-    /* =========================
-       CONSTRUCTOR
-       ========================= */
 
     public CaptchaVerificationPanel() {
         setLayout(new BorderLayout());
@@ -51,13 +43,10 @@ public class CaptchaVerificationPanel extends JPanel {
         generarCaptcha();
     }
 
-    /* =========================
-       INICIALIZACIÓN DE UI
-       ========================= */
 
-    /**
-     * Crea y configura todos los componentes gráficos
-     */
+
+     //Crea y configura todos los componentes gráficos
+
     private void inicializarComponentes() {
 
         // Panel central
@@ -97,13 +86,9 @@ public class CaptchaVerificationPanel extends JPanel {
         add(progressBar, BorderLayout.NORTH);
     }
 
-    /* =========================
-       GENERACIÓN DE CAPTCHA
-       ========================= */
 
-    /**
-     * Genera un CAPTCHA gráfico con ruido visual
-     */
+     //Genera un CAPTCHA gráfico con ruido visual
+
     public void generarCaptcha() {
 
         captchaCorrecto = generarCodigoAleatorio(5);
@@ -115,14 +100,13 @@ public class CaptchaVerificationPanel extends JPanel {
 
         // Fondo
         g2d.setColor(Color.LIGHT_GRAY);
-        g2d.fillRect(0, 0, ancho, 50);
+        g2d.fillRect(0, 0, ancho, 50); //ia para esta linea
 
         // Texto
         g2d.setFont(new Font("Verdana", Font.BOLD, 30));
         g2d.setColor(Color.BLACK);
-        g2d.drawString(captchaCorrecto, 10, 35);
+        g2d.drawString(captchaCorrecto, 10, 35); // ia para est linea
 
-        // Ruido visual
         Random random = new Random();
         for (int i = 0; i < 5; i++) {
             g2d.setColor(new Color(
@@ -147,9 +131,9 @@ public class CaptchaVerificationPanel extends JPanel {
         labelCaptcha.setIcon(new ImageIcon(imagenCaptcha));
     }
 
-    /**
-     * Genera una cadena aleatoria alfanumérica
-     */
+
+     //Genera una cadena aleatoria alfanumérica
+
     private String generarCodigoAleatorio(int longitud) {
         String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random random = new Random();
@@ -163,15 +147,11 @@ public class CaptchaVerificationPanel extends JPanel {
         return codigo.toString();
     }
 
-    /* =========================
-       VALIDACIÓN DEL CAPTCHA
-       ========================= */
-
-    /**
-     * Verifica si el CAPTCHA ingresado es correcto
-     * 
-     * @return true si es correcto, false si falla o está bloqueado
-     */
+//    
+//     Verifica si el CAPTCHA ingresado es correcto
+//     
+//     @return true si es correcto, false si falla o está bloqueado
+//     
     public boolean verificarCaptcha() {
 
         if (bloqueado) {
@@ -204,10 +184,6 @@ public class CaptchaVerificationPanel extends JPanel {
         return false;
     }
 
-    /* =========================
-       BLOQUEO Y TEMPORIZADORES
-       ========================= */
-
     /**
      * Bloquea el CAPTCHA durante X segundos
      */
@@ -239,9 +215,9 @@ public class CaptchaVerificationPanel extends JPanel {
         bloqueoTimer.start();
     }
 
-    /**
-     * Desbloquea el CAPTCHA y reinicia estado
-     */
+
+     // Desbloquea el CAPTCHA y reinicia estado
+
     private void desbloquear() {
         bloqueado = false;
         intentosFallidos = 0;
@@ -250,9 +226,9 @@ public class CaptchaVerificationPanel extends JPanel {
         generarCaptcha();
     }
 
-    /**
-     * Temporizador simple de 10 segundos
-     */
+//    
+//     Temporizador simple de 10 segundos
+//     
     public void iniciarTemporizador() {
 
         progressBar.setMaximum(10);
@@ -278,9 +254,6 @@ public class CaptchaVerificationPanel extends JPanel {
         timer.start();
     }
 
-    /* =========================
-       MÉTODOS DE UTILIDAD
-       ========================= */
 
     public int getIntentosFallidos() {
         return intentosFallidos;
@@ -298,9 +271,9 @@ public class CaptchaVerificationPanel extends JPanel {
         campoCaptcha.setText("");
     }
 
-    /**
-     * Reinicia el componente a su estado inicial
-     */
+
+     //Reinicia el componente a su estado inicial
+
     public void reset() {
         intentosFallidos = 0;
         bloqueado = false;

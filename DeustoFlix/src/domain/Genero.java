@@ -31,7 +31,6 @@ public enum Genero {
     public static Genero fromString(String value) {
         if (value == null) return DRAMA;
         try {
-            // Reemplazamos espacios por guiones bajos para que "Ciencia Ficcion" coincida con "CIENCIA_FICCION"
             String normalizado = value.trim().toUpperCase().replace(" ", "_");
             return Genero.valueOf(normalizado);
         } catch (Exception e) {

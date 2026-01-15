@@ -15,7 +15,7 @@ public class VentanaCrearUsuario extends JFrame {
 
     public VentanaCrearUsuario() {
         setSize(1200, 800);
-        setTitle("Crear Usuario"); // Título de ventana más limpio
+        setTitle("Crear Usuario"); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -88,7 +88,7 @@ public class VentanaCrearUsuario extends JFrame {
         JLabel lblTitulo = new JLabel("DEUSTOFLIX");
         lblTitulo.setFont(new Font("Arial Black", Font.BOLD, 40));
         lblTitulo.setForeground(new Color(229, 9, 20));
-        // --------------------
+
 
         JButton btnSiguiente = new JButton("Siguiente");
         btnSiguiente.setPreferredSize(new Dimension(200, 40));
@@ -137,7 +137,7 @@ public class VentanaCrearUsuario extends JFrame {
         gbc.insets = new Insets(10, 10, 30, 10);
         panelForm.add(lblTitulo, gbc);
 
-        gbc.insets = new Insets(10, 10, 5, 10); // Restaurar padding
+        gbc.insets = new Insets(10, 10, 5, 10); // Restaurar padding(ia para esto)
         gbc.gridy = 1; panelForm.add(nombreUsuarioLabel, gbc);
         gbc.gridy = 2; panelForm.add(nombreUsuario, gbc);
         gbc.gridy = 3; panelForm.add(contraseñaUsuarioLabel, gbc);

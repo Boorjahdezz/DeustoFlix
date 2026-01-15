@@ -24,7 +24,8 @@ public class MainGuiWindow extends JFrame {
     private MediaRepository repo;
     private final String usuario;
     private JLabel userLabel; 
-    private ImageIcon avatar; 
+    @SuppressWarnings("unused")
+	private ImageIcon avatar; 
 
     // --- COLORES ---
     private final Color COLOR_NORMAL = new Color(30, 30, 30);
@@ -61,7 +62,6 @@ public class MainGuiWindow extends JFrame {
         JButton btnSeries = new JButton("Series");
         JButton btnRanking = new JButton("Tabla de Ranking");
         
-        // CAMBIO AQUÍ: Nombre del botón cambiado
         JButton btnFavoritos = new JButton("Favoritos"); 
 
         estilizarBoton(btnInicio, tamañoBoton);
@@ -285,7 +285,7 @@ public class MainGuiWindow extends JFrame {
         headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 40, 0, 40));
 
-        JLabel lblTitle = new JLabel("Favoritos"); // Cambio de texto
+        JLabel lblTitle = new JLabel("Favoritos");
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setFont(new Font("SansSerif", Font.BOLD, 24));
 

@@ -61,7 +61,7 @@ public class CargaDatosIniciales {
          
                 if (values.length >= 7) { 
                     try {
-                        // --- ÍNDICES CORREGIDOS SEGÚN TU LOG DE ERROR ---
+                        
                         String titulo = values[0].replace("\"", "").trim();
                       
                         String generoStr = values[2].replace("\"", "").trim();

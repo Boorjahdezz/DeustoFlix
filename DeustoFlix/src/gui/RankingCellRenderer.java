@@ -20,7 +20,12 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class RankingCellRenderer extends DefaultTableCellRenderer {
 
-    @Override
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {
@@ -49,20 +54,6 @@ public class RankingCellRenderer extends DefaultTableCellRenderer {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(80, 80, 80)), // línea inferior
                 BorderFactory.createEmptyBorder(6, 8, 6, 8)  // padding
         ));
-
-        // Destacar los primeros 3 puestos
-        if (!isSelected && column == 0) {  // suponiendo que la primera columna es el ranking
-            int puesto = 0;
-            try {
-                puesto = Integer.parseInt(value.toString());
-            } catch (NumberFormatException e) {}
-            
-            switch (puesto) {
-                case 1 -> lbl.setForeground(new Color(255, 215, 0));  // Oro
-                case 2 -> lbl.setForeground(new Color(192, 192, 192)); // Plata
-                case 3 -> lbl.setForeground(new Color(205, 127, 50));  // Bronce
-            }
-        }
 
         return lbl;
     }

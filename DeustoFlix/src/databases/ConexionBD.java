@@ -86,7 +86,6 @@ public class ConexionBD {
             return true;
 
         } catch (SQLException e) { 
-            // SOLO MOSTRAMOS AVISO SI ES DUPLICADO O ERROR
             if (e.getMessage().contains("UNIQUE") || e.getErrorCode() == 19) {
                 System.out.println(">>> [AVISO] Intento de registro duplicado. El usuario '" + nombre + "' ya existe.");
             } else {
@@ -205,7 +204,6 @@ public class ConexionBD {
             pst.setDouble(7, val);
             pst.executeUpdate();
         } catch (SQLException e) { 
-            // Ignoramos silenciosamente duplicados en carga masiva
         }
     }
 
@@ -307,6 +305,7 @@ public class ConexionBD {
         } catch (SQLException e) { return false; }
     }
 
+    //Pequeña ayuda de ia para este metodo
     public static void toggleFavorito(String usuario, int idContenido) {
         if (esFavorito(usuario, idContenido)) {
             String sql = "DELETE FROM favoritos WHERE usuario_nombre = ? AND contenido_id = ?";

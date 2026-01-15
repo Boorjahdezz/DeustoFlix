@@ -51,9 +51,8 @@ public class VentanaInicioSesion extends JFrame {
 
         // --- NUEVO TÍTULO ---
         JLabel lblTitulo = new JLabel("DEUSTOFLIX");
-        lblTitulo.setFont(new Font("Arial Black", Font.BOLD, 40)); // Misma fuente que VentanaInicio
-        lblTitulo.setForeground(new Color(229, 9, 20)); // Rojo corporativo
-        // --------------------
+        lblTitulo.setFont(new Font("Arial Black", Font.BOLD, 40)); 
+        lblTitulo.setForeground(new Color(229, 9, 20)); 
 
         // --- ACCIÓN DEL BOTÓN INICIAR SESIÓN ---
         btnIniciar.addActionListener(e -> {
@@ -117,13 +116,13 @@ public class VentanaInicioSesion extends JFrame {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Añadimos el título arriba del todo (gridy = 0)
+        
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 10, 30, 10); // Un poco de margen extra abajo del título
+        gbc.insets = new Insets(10, 10, 30, 10); 
         panelForm.add(lblTitulo, gbc);
 
-        // Desplazamos el resto +1 en gridy
-        gbc.insets = new Insets(10, 10, 5, 10); // Restauramos margen normal
+        
+        gbc.insets = new Insets(10, 10, 5, 10); 
         gbc.gridy = 1; panelForm.add(nombreUsuarioLabel, gbc);
         gbc.gridy = 2; panelForm.add(nombreUsuario, gbc);
         gbc.gridy = 3; panelForm.add(contraseñaLabel, gbc);

@@ -5,7 +5,6 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.util.ArrayList;
 import databases.ConexionBD;
-import domain.*;
 
 
 public class VentanaAdmin extends JFrame {
@@ -97,9 +96,7 @@ public class VentanaAdmin extends JFrame {
         return topBar;
     }
     
-    // ===============================================
     // PANEL GESTIÓN DE USUARIOS
-    // ===============================================
     
     private JPanel crearPanelGestionUsuarios() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
@@ -198,9 +195,7 @@ public class VentanaAdmin extends JFrame {
         }
     }
     
-    // ===============================================
     // PANEL GESTIÓN DE CONTENIDO
-    // ===============================================
     
     private JPanel crearPanelGestionContenido() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
@@ -290,9 +285,7 @@ public class VentanaAdmin extends JFrame {
         }
     }
     
-    // ===============================================
     // PANEL ESTADÍSTICAS
-    // ===============================================
     
     private JPanel crearPanelEstadisticas() {
         JPanel panel = new JPanel(new GridLayout(2, 2, 20, 20));
@@ -353,9 +346,7 @@ public class VentanaAdmin extends JFrame {
         return tarjeta;
     }
     
-    // ===============================================
     // MÉTODOS AUXILIARES
-    // ===============================================
     
     private JButton crearBotonEstilizado(String texto, boolean esPeligro) {
         JButton btn = new JButton(texto);
