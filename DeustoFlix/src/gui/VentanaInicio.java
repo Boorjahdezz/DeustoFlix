@@ -18,10 +18,7 @@ public class VentanaInicio extends JFrame {
 
         // Panel principal con gradiente
         JPanel panelPrincipal = new JPanel(new BorderLayout()) {
-            
-        	// CODIGO GENERADO CON IAG 
-        	//Claude-4.5 Sin modificar
-        	@Override
+            @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
@@ -90,14 +87,53 @@ public class VentanaInicio extends JFrame {
         panelCentro.add(panelBotones, gbc);
 
         // Panel footer con información adicional
-        JPanel panelFooter = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel panelFooter = new JPanel(new BorderLayout());
         panelFooter.setOpaque(false);
         panelFooter.setBorder(new EmptyBorder(0, 0, 30, 0));
         
         JLabel lblFooter = new JLabel("© 2026 DeustoFlix - Entretenimiento sin límites");
         lblFooter.setFont(new Font("Arial", Font.PLAIN, 12));
         lblFooter.setForeground(new Color(140, 140, 140));
-        panelFooter.add(lblFooter);
+        lblFooter.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        // ===== DISCREET ADMIN BUTTON =====
+        JButton btnAdmin = new JButton("⚙");
+        btnAdmin.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnAdmin.setForeground(new Color(80, 80, 80)); // Very subtle gray
+        btnAdmin.setBackground(new Color(20, 20, 25));
+        btnAdmin.setBorderPainted(false);
+        btnAdmin.setFocusPainted(false);
+        btnAdmin.setPreferredSize(new Dimension(35, 35));
+        btnAdmin.setToolTipText("Admin Access");
+        btnAdmin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Hover effect
+        btnAdmin.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnAdmin.setForeground(new Color(229, 9, 20));
+            }
+            
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnAdmin.setForeground(new Color(80, 80, 80));
+            }
+        });
+        
+        btnAdmin.addActionListener(e -> mostrarLoginAdmin());
+        
+        // Position admin button on the right
+        JPanel footerContent = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        footerContent.setOpaque(false);
+        footerContent.add(lblFooter);
+        
+        JPanel adminButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        adminButtonPanel.setOpaque(false);
+        adminButtonPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
+        adminButtonPanel.add(btnAdmin);
+        
+        panelFooter.add(footerContent, BorderLayout.CENTER);
+        panelFooter.add(adminButtonPanel, BorderLayout.EAST);
 
         // Añadir paneles al frame
         panelPrincipal.add(panelHeader, BorderLayout.NORTH);
@@ -105,6 +141,113 @@ public class VentanaInicio extends JFrame {
         panelPrincipal.add(panelFooter, BorderLayout.SOUTH);
 
         add(panelPrincipal);
+    }
+
+    /**
+     * Show admin login dialog
+     */
+    private void mostrarLoginAdmin() {
+        JDialog loginDialog = new JDialog(this, "Admin Access", true);
+        loginDialog.setSize(400, 250);
+        loginDialog.setLocationRelativeTo(this);
+        loginDialog.setLayout(new BorderLayout());
+        
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(30, 30, 35));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        // Title
+        JLabel lblTitle = new JLabel("🔐 Administrator Login");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitle.setForeground(new Color(229, 9, 20));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(lblTitle, gbc);
+        
+        // Username
+        JLabel lblUser = new JLabel("Username:");
+        lblUser.setForeground(Color.WHITE);
+        lblUser.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        panel.add(lblUser, gbc);
+        
+        JTextField txtUser = new JTextField(15);
+        txtUser.setBackground(new Color(50, 50, 55));
+        txtUser.setForeground(Color.WHITE);
+        txtUser.setCaretColor(Color.WHITE);
+        txtUser.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtUser.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(80, 80, 85)),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel.add(txtUser, gbc);
+        
+        // Password
+        JLabel lblPass = new JLabel("Password:");
+        lblPass.setForeground(Color.WHITE);
+        lblPass.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(lblPass, gbc);
+        
+        JPasswordField txtPass = new JPasswordField(15);
+        txtPass.setBackground(new Color(50, 50, 55));
+        txtPass.setForeground(Color.WHITE);
+        txtPass.setCaretColor(Color.WHITE);
+        txtPass.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtPass.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(80, 80, 85)),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panel.add(txtPass, gbc);
+        
+        // Login button
+        JButton btnLogin = new JButton("ACCESS");
+        btnLogin.setBackground(new Color(229, 9, 20));
+        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setFont(new Font("Arial", Font.BOLD, 14));
+        btnLogin.setFocusPainted(false);
+        btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLogin.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 10, 10, 10);
+        panel.add(btnLogin, gbc);
+        
+        btnLogin.addActionListener(e -> {
+            String user = txtUser.getText();
+            String pass = new String(txtPass.getPassword());
+            
+            if (ConexionBD.esAdmin(user, pass)) {
+                loginDialog.dispose();
+                new VentanaAdmin().setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(loginDialog, 
+                    "Invalid credentials", 
+                    "Access Denied", 
+                    JOptionPane.ERROR_MESSAGE);
+                txtPass.setText("");
+            }
+        });
+        
+        // Enter key support
+        txtPass.addActionListener(e -> btnLogin.doClick());
+        
+        loginDialog.add(panel, BorderLayout.CENTER);
+        loginDialog.setVisible(true);
     }
 
     /**
@@ -168,7 +311,6 @@ public class VentanaInicio extends JFrame {
 
         return boton;
     }
-
 
     public static void main(String[] args) {
         // Inicializamos la base de datos
