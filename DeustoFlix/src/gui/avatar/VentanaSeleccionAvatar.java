@@ -16,7 +16,6 @@ public class VentanaSeleccionAvatar extends JFrame {
     private boolean modoEdicion = false;
     private MainGuiWindow ventanaPrincipalRef;
 
-    
     public VentanaSeleccionAvatar(String nombre, String gmail, String pass) {
         this.nombreTemp = nombre;
         this.gmailTemp = gmail;
@@ -25,7 +24,6 @@ public class VentanaSeleccionAvatar extends JFrame {
         inicializarComponentes();
     }
 
-    
     public VentanaSeleccionAvatar(MainGuiWindow ventanaPrincipal) {
         this.modoEdicion = true;
         this.ventanaPrincipalRef = ventanaPrincipal;
@@ -36,11 +34,9 @@ public class VentanaSeleccionAvatar extends JFrame {
         setTitle(modoEdicion ? "Cambiar Avatar" : "Paso 2: Elige tu avatar");
         setSize(800, 550); 
         setLocationRelativeTo(null);
-        
         setDefaultCloseOperation(modoEdicion ? JFrame.DISPOSE_ON_CLOSE : JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        
         String textoTitulo = modoEdicion ? "Selecciona tu nuevo icono de perfil" : "Elige una foto de perfil para terminar";
         JLabel titulo = new JLabel(textoTitulo, SwingConstants.CENTER);
         titulo.setForeground(Color.WHITE);
@@ -49,7 +45,6 @@ public class VentanaSeleccionAvatar extends JFrame {
         titulo.setOpaque(true);
         titulo.setBackground(new Color(25, 25, 25));
         add(titulo, BorderLayout.NORTH);
-
         
         JPanel grid = new JPanel(new GridLayout(2, 4, 15, 15));
         grid.setBackground(new Color(20, 20, 20));
@@ -64,7 +59,6 @@ public class VentanaSeleccionAvatar extends JFrame {
 
         for (String nombreArchivo : nombresArchivos) {
             ImageIcon icon = null;
-            
             java.net.URL url = cl.getResource(nombreArchivo);
             if (url == null) url = cl.getResource("resources/" + nombreArchivo);
             if (url == null) url = cl.getResource("Imagenes/" + nombreArchivo);
@@ -72,13 +66,10 @@ public class VentanaSeleccionAvatar extends JFrame {
             if (url != null) {
                 icon = new ImageIcon(url);
             } else {
-                System.err.println("Imagen no encontrada: " + nombreArchivo);
                 icon = new ImageIcon(); 
             }
 
-        
             final ImageIcon iconFinal = icon; 
-            
             
             JButton b = new JButton(escalarIcono(icon, 120, 120));
             b.setBackground(new Color(35, 35, 35));
@@ -88,31 +79,23 @@ public class VentanaSeleccionAvatar extends JFrame {
             // --- ACCIÓN AL PULSAR UNA FOTO ---
             b.addActionListener(e -> {
                 if (modoEdicion) {
-                    
                     String usuarioActual = UserSession.getUsuario(); 
-                    
-                    
                     boolean exito = ConexionBD.actualizarFotoUsuario(usuarioActual, nombreArchivo);
                     
                     if (exito) {
                         JOptionPane.showMessageDialog(this, "Foto de perfil actualizada.");
-                        
-                    
                         UserSession.set(usuarioActual, iconFinal);
-                        
-                    
                         if (ventanaPrincipalRef != null) {
                             ventanaPrincipalRef.actualizarAvatarEnInterfaz(iconFinal);
                         }
-                        
-                    
                         dispose(); 
                     } else {
-                        JOptionPane.showMessageDialog(this, "Error al guardar en la base de datos.");
+                        JOptionPane.showMessageDialog(this, "Error al conectar con la base de datos.", "Error BD", JOptionPane.ERROR_MESSAGE);
                     }
 
                 } else {
-                    
+                    // MODO CREACIÓN NUEVO USUARIO
+                    // Ahora crearUsuario ya gestiona internamente el error de duplicado (Unique)
                     boolean exito = ConexionBD.crearUsuario(nombreTemp, gmailTemp, passTemp, nombreArchivo);
 
                     if (exito) {
@@ -121,11 +104,14 @@ public class VentanaSeleccionAvatar extends JFrame {
                         new MainGuiWindow(nombreTemp, iconFinal).setVisible(true);
                         dispose();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Error: El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                        // Mensaje claro en pantalla
+                        JOptionPane.showMessageDialog(this, "El nombre de usuario '" + nombreTemp + "' ya está en uso.\nPor favor, prueba con otro.", "Usuario Duplicado", JOptionPane.WARNING_MESSAGE);
+                        // Cerramos esta ventana y volvemos a la de registro para que lo intente de nuevo
+                        new gui.VentanaCrearUsuario().setVisible(true);
+                        dispose();
                     }
                 }
             });
-            
             grid.add(b);
         }
 
@@ -136,7 +122,7 @@ public class VentanaSeleccionAvatar extends JFrame {
         panelSur.setBackground(new Color(25, 25, 25));
         panelSur.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        JButton btnExit = new JButton(modoEdicion ? "Cancelar" : "Cancelar y Volver al Login");
+        JButton btnExit = new JButton(modoEdicion ? "Cancelar" : "Cancelar Registro");
         btnExit.setFont(new Font("SansSerif", Font.BOLD, 14));
         btnExit.setBackground(new Color(180, 50, 50)); 
         btnExit.setForeground(Color.WHITE);
@@ -145,10 +131,8 @@ public class VentanaSeleccionAvatar extends JFrame {
         
         btnExit.addActionListener(e -> {
             if (modoEdicion) {
-               
                 dispose();
             } else {
-               
                 new VentanaInicioSesion().setVisible(true);
                 dispose();
             }

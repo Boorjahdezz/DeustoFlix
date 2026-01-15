@@ -2,7 +2,6 @@ package gui;
 
 import java.awt.*;
 import javax.swing.*;
-
 import databases.ConexionBD;
 import gui.avatar.UserSession;
 
@@ -18,6 +17,7 @@ public class VentanaInicioSesion extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // --- DEFINICIÓN DE COMPONENTES ---
         JTextField nombreUsuario = new JTextField();
         nombreUsuario.setPreferredSize(new Dimension(300, 40));
         nombreUsuario.setBackground(new Color(50, 50, 50));
@@ -49,47 +49,37 @@ public class VentanaInicioSesion extends JFrame {
         btnIniciar.setPreferredSize(new Dimension(200, 40));
         btnIniciar.setFont(new Font("Arial", Font.BOLD, 16));
 
+        // --- NUEVO TÍTULO ---
+        JLabel lblTitulo = new JLabel("DEUSTOFLIX");
+        lblTitulo.setFont(new Font("Arial Black", Font.BOLD, 40)); // Misma fuente que VentanaInicio
+        lblTitulo.setForeground(new Color(229, 9, 20)); // Rojo corporativo
+        // --------------------
+
         // --- ACCIÓN DEL BOTÓN INICIAR SESIÓN ---
         btnIniciar.addActionListener(e -> {
             String nombre = nombreUsuario.getText();
             String pass = new String(contraseñaUsuario.getPassword());
             
             if (nombre.isEmpty() || pass.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "Por favor complete todos los campos", 
-                    "Campos incompletos", 
-                    JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Por favor complete todos los campos", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (panelCaptcha.isBloqueado()) {
-                JOptionPane.showMessageDialog(this, 
-                    "Demasiados intentos fallidos. Por favor espere.", 
-                    "Bloqueado", 
-                    JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Demasiados intentos fallidos. Por favor espere.", "Bloqueado", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (!panelCaptcha.verificarCaptcha()) {
                 int intentosRestantes = panelCaptcha.getIntentosRestantes();
-                
                 if (panelCaptcha.isBloqueado()) {
-                    JOptionPane.showMessageDialog(this, 
-                        "Has alcanzado el número máximo de intentos. Espera para continuar.", 
-                        "Bloqueado", 
-                        JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Has alcanzado el número máximo de intentos. Espera para continuar.", "Bloqueado", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, 
-                        "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, 
-                        "Error CAPTCHA", 
-                        JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Código de verificación incorrecto. Intentos restantes: " + intentosRestantes, "Error CAPTCHA", JOptionPane.ERROR_MESSAGE);
                 }
                 return;
             }
             
             if (ConexionBD.loginUsuario(nombre, pass)) {
-
                 String fotoFile = ConexionBD.obtenerFotoUsuario(nombre);
-                
-        
                 ImageIcon iconoUsuario = null;
                 if (fotoFile != null && !fotoFile.isEmpty()) {
                     java.net.URL url = getClass().getClassLoader().getResource(fotoFile);
@@ -103,11 +93,7 @@ public class VentanaInicioSesion extends JFrame {
                 }
 
                 UserSession.set(nombre, iconoUsuario);
-                
-                // --- CORRECCIÓN AQUÍ: Volvemos al constructor (String, ImageIcon) ---
                 new MainGuiWindow(nombre, iconoUsuario).setVisible(true);
-                // --------------------------------------------------------------------
-                
                 dispose(); 
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
@@ -122,34 +108,39 @@ public class VentanaInicioSesion extends JFrame {
             dispose();
         });
 
+        // --- LAYOUT ---
         JPanel panelForm = new JPanel(new GridBagLayout());
         panelForm.setBackground(new Color(30, 30, 30));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 10, 15, 10);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
 
+        // Añadimos el título arriba del todo (gridy = 0)
         gbc.gridy = 0;
-        panelForm.add(nombreUsuarioLabel, gbc);
-        gbc.gridy = 1;
-        panelForm.add(nombreUsuario, gbc);
-        gbc.gridy = 2;
-        panelForm.add(contraseñaLabel, gbc);
-        gbc.gridy = 3;
-        panelForm.add(contraseñaUsuario, gbc);
+        gbc.insets = new Insets(10, 10, 30, 10); // Un poco de margen extra abajo del título
+        panelForm.add(lblTitulo, gbc);
+
+        // Desplazamos el resto +1 en gridy
+        gbc.insets = new Insets(10, 10, 5, 10); // Restauramos margen normal
+        gbc.gridy = 1; panelForm.add(nombreUsuarioLabel, gbc);
+        gbc.gridy = 2; panelForm.add(nombreUsuario, gbc);
+        gbc.gridy = 3; panelForm.add(contraseñaLabel, gbc);
+        gbc.gridy = 4; panelForm.add(contraseñaUsuario, gbc);
         
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.insets = new Insets(20, 10, 5, 10);
         panelForm.add(captchaLabel, gbc);
         
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.insets = new Insets(5, 10, 10, 10);
         panelForm.add(panelCaptcha, gbc);
         
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.insets = new Insets(20, 10, 10, 10);
         panelForm.add(btnIniciar, gbc);
+        
         add(panelForm, BorderLayout.CENTER);
 
         JPanel panelExit = new JPanel(new FlowLayout(FlowLayout.LEFT));
