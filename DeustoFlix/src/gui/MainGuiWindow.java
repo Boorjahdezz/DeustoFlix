@@ -55,12 +55,14 @@ public class MainGuiWindow extends JFrame {
         topBar.setBackground(new Color(20, 20, 20));
         topBar.setPreferredSize(new Dimension(getWidth(), 60));
 
-        Dimension tamañoBoton = new Dimension(140, 40);
+        Dimension tamañoBoton = new Dimension(160, 40);
         JButton btnInicio = new JButton("Inicio");
         JButton btnPeliculas = new JButton("Películas");
         JButton btnSeries = new JButton("Series");
-        JButton btnRanking = new JButton("Ranking");
-        JButton btnFavoritos = new JButton("Favoritos");
+        JButton btnRanking = new JButton("Tabla de Ranking");
+        
+        // CAMBIO AQUÍ: Nombre del botón cambiado
+        JButton btnFavoritos = new JButton("Favoritos"); 
 
         estilizarBoton(btnInicio, tamañoBoton);
         estilizarBoton(btnPeliculas, tamañoBoton);
@@ -68,7 +70,7 @@ public class MainGuiWindow extends JFrame {
         estilizarBoton(btnRanking, tamañoBoton);
         estilizarBoton(btnFavoritos, tamañoBoton);
 
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         navPanel.setOpaque(false);
         navPanel.add(btnInicio);
         navPanel.add(btnPeliculas);
@@ -166,7 +168,7 @@ public class MainGuiWindow extends JFrame {
             actualizarSeleccionBoton(btnRanking, todosLosBotones);
         });
         btnFavoritos.addActionListener(e -> {
-            mostrarFavoritos();
+            mostrarFavoritos(); // Llama a la pantalla de favoritos
             actualizarSeleccionBoton(btnFavoritos, todosLosBotones);
         });
 
@@ -263,7 +265,7 @@ public class MainGuiWindow extends JFrame {
         refrescar();
     }
     
-    // --- MOSTRAR FAVORITOS CON BOTÓN BORRAR TODO ---
+    // --- MOSTRAR FAVORITOS CON ELIMINAR TODO ---
     private void mostrarFavoritos() {
         contentPanel.removeAll();
         
@@ -278,18 +280,17 @@ public class MainGuiWindow extends JFrame {
             return;
         }
 
-        // --- CABECERA CON BOTÓN DE ELIMINAR TODO ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.BLACK);
         headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 40, 0, 40));
 
-        JLabel lblTitle = new JLabel("Mi Lista");
+        JLabel lblTitle = new JLabel("Favoritos"); // Cambio de texto
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setFont(new Font("SansSerif", Font.BOLD, 24));
 
         JButton btnBorrarTodo = new JButton("Eliminar Todo 🗑");
-        btnBorrarTodo.setBackground(new Color(150, 20, 20)); // Rojo oscuro
+        btnBorrarTodo.setBackground(new Color(150, 20, 20)); 
         btnBorrarTodo.setForeground(Color.WHITE);
         btnBorrarTodo.setFocusPainted(false);
         btnBorrarTodo.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -306,14 +307,13 @@ public class MainGuiWindow extends JFrame {
             
             if (confirm == JOptionPane.YES_OPTION) {
                 ConexionBD.vaciarFavoritos(usuario);
-                mostrarFavoritos(); // Recargar la vista (saldrá vacía)
+                mostrarFavoritos(); 
             }
         });
 
         headerPanel.add(lblTitle, BorderLayout.WEST);
         headerPanel.add(btnBorrarTodo, BorderLayout.EAST);
         contentPanel.add(headerPanel);
-        // -------------------------------------------
 
         ArrayList<MediaItem> todos = repo.getAll();
         ArrayList<MediaItem> misFavs = new ArrayList<>();
