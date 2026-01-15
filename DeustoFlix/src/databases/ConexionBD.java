@@ -48,6 +48,16 @@ public class ConexionBD {
                     + "duracion INTEGER, "
                     + "valoracion REAL)";
             stmt.execute(sqlContenido);
+            
+            // --- NUEVA TABLA FAVORITOS ---
+            String sqlFavoritos = "CREATE TABLE IF NOT EXISTS favoritos ("
+                    + "usuario_nombre TEXT, "
+                    + "contenido_id INTEGER, "
+                    + "PRIMARY KEY (usuario_nombre, contenido_id), "
+                    + "FOREIGN KEY(usuario_nombre) REFERENCES usuarios(nombre), "
+                    + "FOREIGN KEY(contenido_id) REFERENCES contenido(id))";
+            stmt.execute(sqlFavoritos);
+            // -----------------------------
 
         } catch (SQLException e) { 
             e.printStackTrace(); 
@@ -126,7 +136,6 @@ public class ConexionBD {
         }
     }
 
-    // --- NUEVO MÉTODO PARA CAMBIAR FOTO ---
     public static boolean actualizarFotoUsuario(String nombre, String nuevaRutaFoto) {
         String sql = "UPDATE usuarios SET foto = ? WHERE nombre = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -139,7 +148,6 @@ public class ConexionBD {
             return false;
         }
     }
-    // --------------------------------------
 
     public static boolean eliminarUsuario(String nombre) {
         String sql = "DELETE FROM usuarios WHERE nombre = ?";
@@ -179,6 +187,7 @@ public class ConexionBD {
         String sql = "SELECT * FROM contenido";
         try (Connection con = getConnection(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
+                int id = rs.getInt("id"); // CAPTURAMOS EL ID
                 String titulo = rs.getString("titulo");
                 String tipo = rs.getString("tipo");
                 Genero genero = Genero.fromString(rs.getString("genero"));
@@ -186,8 +195,18 @@ public class ConexionBD {
                 String desc = rs.getString("descripcion");
                 int dur = rs.getInt("duracion");
                 double val = rs.getDouble("valoracion");
-                if ("Pelicula".equals(tipo)) lista.add(new Pelicula(titulo, desc, genero, categoria, val, dur));
-                else lista.add(new Serie(titulo, desc, genero, categoria, val, dur));
+                
+                MediaItem item;
+                if ("Pelicula".equals(tipo)) {
+                    item = new Pelicula(titulo, desc, genero, categoria, val, dur);
+                } else {
+                    item = new Serie(titulo, desc, genero, categoria, val, dur);
+                }
+                
+                // ASIGNAMOS EL ID AL OBJETO
+                item.setId(id);
+                
+                lista.add(item);
             }
         } catch (SQLException e) { 
             e.printStackTrace(); 
@@ -262,9 +281,6 @@ public class ConexionBD {
         }
     }
 
-    /**
-     * Obtiene todo el contenido 
-     */
     public static ArrayList<String[]> obtenerTodosUsuarios() {
         ArrayList<String[]> usuarios = new ArrayList<>();
         String sql = "SELECT id, nombre, gmail, foto FROM usuarios ORDER BY nombre";
@@ -289,9 +305,6 @@ public class ConexionBD {
         return usuarios;
     }
 
-    /**
-     * Borra el contenido mediante el id
-     */
     public static boolean eliminarContenido(int id) {
         String sql = "DELETE FROM contenido WHERE id = ?";
         
@@ -308,9 +321,6 @@ public class ConexionBD {
         }
     }
 
-    /**
-     * Actualiza el contenido 
-     */
     public static boolean actualizarContenido(int id, String titulo, String tipo, 
                                              String genero, String categoria, 
                                              String descripcion, int duracion, 
@@ -340,9 +350,6 @@ public class ConexionBD {
         }
     }
 
-    /**
-     * Obtener el todo el contenido con el id (for admin management)
-     */
     public static ArrayList<String[]> obtenerTodoContenidoConID() {
         ArrayList<String[]> contenidos = new ArrayList<>();
         String sql = "SELECT id, titulo, tipo, genero, categoria, duracion, valoracion FROM contenido ORDER BY titulo";
@@ -370,10 +377,51 @@ public class ConexionBD {
         return contenidos;
     }
 
-    /**
-     * Verifica si el usuario es administrador
-     */
     public static boolean esAdmin(String nombre, String contrasenya) {
         return "admin".equals(nombre) && "admin".equals(contrasenya);
     }
+    
+    // --- MÉTODOS NUEVOS PARA FAVORITOS ---
+    
+    public static boolean esFavorito(String usuario, int idContenido) {
+        String sql = "SELECT 1 FROM favoritos WHERE usuario_nombre = ? AND contenido_id = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            pst.setInt(2, idContenido);
+            ResultSet rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
+    public static void toggleFavorito(String usuario, int idContenido) {
+        if (esFavorito(usuario, idContenido)) {
+            String sql = "DELETE FROM favoritos WHERE usuario_nombre = ? AND contenido_id = ?";
+            try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setString(1, usuario);
+                pst.setInt(2, idContenido);
+                pst.executeUpdate();
+            } catch (SQLException e) { e.printStackTrace(); }
+        } else {
+            String sql = "INSERT INTO favoritos (usuario_nombre, contenido_id) VALUES (?, ?)";
+            try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setString(1, usuario);
+                pst.setInt(2, idContenido);
+                pst.executeUpdate();
+            } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    public static ArrayList<Integer> obtenerIdsFavoritos(String usuario) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        String sql = "SELECT contenido_id FROM favoritos WHERE usuario_nombre = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, usuario);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                ids.add(rs.getInt("contenido_id"));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return ids;
+    }
+    // -------------------------------------
 }

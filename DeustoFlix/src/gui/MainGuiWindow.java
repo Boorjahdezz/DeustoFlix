@@ -1,10 +1,9 @@
-
 package gui;
 
 import domain.*;
 import databases.ConexionBD;
-import gui.avatar.VentanaSeleccionAvatar; // IMPORTANTE
-import gui.avatar.UserSession;           // IMPORTANTE
+import gui.avatar.VentanaSeleccionAvatar; 
+import gui.avatar.UserSession;           
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +24,7 @@ public class MainGuiWindow extends JFrame {
     private MediaRepository repo;
     private final String usuario;
     private JLabel userLabel; 
-    private ImageIcon avatar; // Quitamos 'final' para poder actualizarlo
+    private ImageIcon avatar; 
 
     // --- COLORES ---
     private final Color COLOR_NORMAL = new Color(30, 30, 30);
@@ -39,14 +38,11 @@ public class MainGuiWindow extends JFrame {
         this.usuario = usuario;
         this.avatar = avatar;
 
-        // Aseguramos que la sesión esté sincronizada al abrir
         if (!usuario.equals("Invitado")) {
             UserSession.set(usuario, avatar);
         }
 
         setTitle("DeustoFlix");
-        
-        // --- TAMAÑO GRANDE ---
         setSize(1600, 1100); 
         setLocationRelativeTo(null); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,23 +55,27 @@ public class MainGuiWindow extends JFrame {
         topBar.setBackground(new Color(20, 20, 20));
         topBar.setPreferredSize(new Dimension(getWidth(), 60));
 
-        Dimension tamañoBoton = new Dimension(160, 40);
+        Dimension tamañoBoton = new Dimension(140, 40); // Ligeramente más pequeños para que quepan 5
         JButton btnInicio = new JButton("Inicio");
         JButton btnPeliculas = new JButton("Películas");
         JButton btnSeries = new JButton("Series");
-        JButton btnRanking = new JButton("Tabla de Ranking");
+        JButton btnRanking = new JButton("Ranking");
+        JButton btnFavoritos = new JButton("Favoritos");
+        
 
         estilizarBoton(btnInicio, tamañoBoton);
         estilizarBoton(btnPeliculas, tamañoBoton);
         estilizarBoton(btnSeries, tamañoBoton);
         estilizarBoton(btnRanking, tamañoBoton);
+        estilizarBoton(btnFavoritos, tamañoBoton);
 
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         navPanel.setOpaque(false);
         navPanel.add(btnInicio);
         navPanel.add(btnPeliculas);
         navPanel.add(btnSeries);
         navPanel.add(btnRanking);
+        navPanel.add(btnFavoritos); // Añadir al panel
 
         // --- PANEL DE USUARIO ---
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
@@ -148,7 +148,7 @@ public class MainGuiWindow extends JFrame {
         add(scroll, BorderLayout.CENTER);
 
         // --- GESTIÓN DE BOTONES ACTIVOS ---
-        JButton[] todosLosBotones = {btnInicio, btnPeliculas, btnSeries, btnRanking};
+        JButton[] todosLosBotones = {btnInicio, btnPeliculas, btnSeries, btnRanking, btnFavoritos};
 
         btnInicio.addActionListener(e -> {
             mostrarInicio(null);
@@ -165,6 +165,12 @@ public class MainGuiWindow extends JFrame {
         btnRanking.addActionListener(e -> {
             mostrarRanking();
             actualizarSeleccionBoton(btnRanking, todosLosBotones);
+        });
+        
+        // --- ACCIÓN DEL NUEVO BOTÓN ---
+        btnFavoritos.addActionListener(e -> {
+            mostrarFavoritos();
+            actualizarSeleccionBoton(btnFavoritos, todosLosBotones);
         });
 
         // Carga inicial
@@ -188,7 +194,6 @@ public class MainGuiWindow extends JFrame {
     private void mostrarInicio(String terminoBusqueda) {
         contentPanel.removeAll();
         
-        // Panel del Buscador
         JPanel searchContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchContainer.setBackground(Color.BLACK);
         searchContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80)); 
@@ -226,9 +231,7 @@ public class MainGuiWindow extends JFrame {
         contentPanel.add(searchContainer);
 
 
-        // --- LÓGICA DE CONTENIDO ---
         if (terminoBusqueda == null || terminoBusqueda.isEmpty()) {
-            // MOSTRAR TODO (POR CATEGORÍAS)
             ArrayList<MediaItem> lista = repo.getAll();
             Map<String, ArrayList<MediaItem>> cats = repo.agruparPorCategoria(lista);
 
@@ -238,19 +241,16 @@ public class MainGuiWindow extends JFrame {
                 contentPanel.add(new MediaPanelFilas(cats.get(cat)));
             }
         } else {
-            // MOSTRAR RESULTADOS DE BÚSQUEDA
             ArrayList<MediaItem> resultados = repo.buscarPorTitulo(terminoBusqueda);
             
             JLabel lblResultados = crearTitulo("Resultados para: \"" + terminoBusqueda + "\"");
             lblResultados.setForeground(new Color(255, 0, 0));
             contentPanel.add(lblResultados);
             
-
             if (!resultados.isEmpty()) {
                 MediaPanelFilas panelResultados = new MediaPanelFilas(resultados);
                 contentPanel.add(panelResultados);
                 
-                // --- RECOMENDACIONES BASADAS EN LA BÚSQUEDA ---
                 List<MediaItem> recomendados = obtenerRecomendaciones(resultados);
                 
                 if (!recomendados.isEmpty()) {
@@ -274,6 +274,68 @@ public class MainGuiWindow extends JFrame {
         refrescar();
     }
     
+    // --- NUEVO MÉTODO MOSTRAR FAVORITOS ---
+    private void mostrarFavoritos() {
+        contentPanel.removeAll();
+        
+        ArrayList<Integer> idsFavs = ConexionBD.obtenerIdsFavoritos(usuario);
+        
+        if (idsFavs.isEmpty()) {
+            JLabel vacio = crearTitulo("Aún no tienes favoritos. ¡Dale al corazón ❤!");
+            vacio.setForeground(Color.GRAY);
+            vacio.setHorizontalAlignment(SwingConstants.CENTER);
+            contentPanel.add(vacio);
+            refrescar();
+            return;
+        }
+
+        // Filtramos los items que coincidan con los IDs favoritos
+        ArrayList<MediaItem> todos = repo.getAll();
+        ArrayList<MediaItem> misFavs = new ArrayList<>();
+        
+        for (MediaItem item : todos) {
+            if (idsFavs.contains(item.getId())) {
+                misFavs.add(item);
+            }
+        }
+
+        // Separar Películas y Series
+        ArrayList<MediaItem> pelisFav = new ArrayList<>();
+        ArrayList<MediaItem> seriesFav = new ArrayList<>();
+        
+        for (MediaItem item : misFavs) {
+            if (item instanceof Pelicula) {
+                pelisFav.add(item);
+            } else {
+                seriesFav.add(item);
+            }
+        }
+
+        // Pintar secciones
+        if (!pelisFav.isEmpty()) {
+            JLabel lbl = crearTitulo("Mis Películas Favoritas");
+            lbl.setForeground(new Color(229, 9, 20));
+            contentPanel.add(lbl);
+            contentPanel.add(new MediaPanelFilas(pelisFav));
+        }
+        
+        if (!seriesFav.isEmpty()) {
+            JLabel lbl = crearTitulo("Mis Series Favoritas");
+            lbl.setForeground(new Color(229, 9, 20));
+            contentPanel.add(lbl);
+            contentPanel.add(new MediaPanelFilas(seriesFav));
+        }
+        
+        // Si por error de sincronización la lista está vacía tras filtrar
+        if (misFavs.isEmpty()) {
+            JLabel vacio = crearTitulo("Error: Contenido favorito no encontrado en catálogo.");
+            contentPanel.add(vacio);
+        }
+
+        refrescar();
+    }
+    // -------------------------------------
+
     private List<MediaItem> obtenerRecomendaciones(List<MediaItem> resultadosBusqueda) {
         List<MediaItem> recomendados = new ArrayList<>();
         List<MediaItem> todoElCatalogo = repo.getAll();
@@ -298,10 +360,6 @@ public class MainGuiWindow extends JFrame {
         
         return recomendados;
     }
-
-    // ================================================================
-    //  RESTO DEL CÓDIGO
-    // ================================================================
 
     private void estilizarBotonPequeño(JButton b) {
         b.setBackground(new Color(229, 9, 20));
@@ -422,9 +480,7 @@ public class MainGuiWindow extends JFrame {
         modelo.setDatos(lista);
     }
 
-    // --- CAMBIO AQUÍ: Ahora llama a la nueva ventana ---
     private void logicaCambiarFoto() {
-        // Le pasamos 'this' para que sepa quién la abrió y pueda refrescar el icono al cerrar
         VentanaSeleccionAvatar ventana = new VentanaSeleccionAvatar(this);
         ventana.setVisible(true);
     }
